@@ -43,6 +43,7 @@ MIDIOSC.init=function(self,filename)
   end
   for i,_ in pairs(events) do
     events[i].state=0
+    events[i].last_msg_time=MIDIOSC.current_time()
   end
   self.settings.events=events
   
@@ -71,9 +72,14 @@ MIDIOSC.on_input=function(data)
   local d=midi.to_msg(data)
   MIDIOSC.print('MIDIOSC',d.type,d.cc,d.val)
   nval=d.val/127.0
+  current_time=MIDIOSC.current_time()
   for i,e in pairs(MIDIOSC.settings.events) do
     if e.midi==d.cc then
       if e.button~=nil and d.val~=127 then
+        return
+      end
+      -- a small debouncer
+      if current_time-e.last_msg_time<0.05 then
         return
       end
       for _,o in pairs(e.osc) do
@@ -91,14 +97,21 @@ MIDIOSC.on_input=function(data)
           nval=o.data
         end
         MIDIOSC.print("MIDIOSC",o.msg,nval)
+        osc.send({"localhost",10111},o.msg,nval)
+        MIDIOSC.settings.events[i].last_msg_time=current_time
       end
       MIDIOSC.print('MIDIOSC',e.comment)
+      break
     end
   end
   
 end
 
 -- utils
+
+MIDIOSC.current_time=function()
+  return clock.get_beats()*clock.get_beat_sec()
+end
 
 MIDIOSC.readAll=function(file)
   local f=assert(io.open(file,"rb"))

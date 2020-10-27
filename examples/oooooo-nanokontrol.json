@@ -1,0 +1,110 @@
+{
+    "events": [
+    {
+        "button": true,
+        "comment": "turning on compressor",
+        "midi": 38,
+        "osc": [
+        {
+            "data": 127,
+            "msg": "/param/compressor"
+        },
+        {
+            "data": 1,
+            "msg": "/param/comp_mix"
+        }]
+    },
+    {
+        "button": true,
+        "comment": "turning off compressor",
+        "midi": 54,
+        "osc": [
+        {
+            "data": 0,
+            "msg": "/param/compressor"
+        }]
+    },
+    {
+        "button": true,
+        "comment": "turning on reverb",
+        "midi": 39,
+        "osc": [
+        {
+            "data": 127,
+            "msg": "/param/reverb"
+        },
+        {
+            "data": -9,
+            "msg": "/param/rev_monitor_input"
+        },
+        {
+            "data": 6,
+            "msg": "/param/rev_return_level"
+        }]
+    },
+    {
+        "button": true,
+        "comment": "turning off reverb",
+        "midi": 55,
+        "osc": [
+        {
+            "data": 0,
+            "msg": "/param/reverb"
+        }]
+    },
+    {
+        "comment": "volume",
+        "midi": 0,
+        "midi_add": 1,
+        "count": 6,
+        "osc": [
+        {
+            "bounds": [
+                0,
+                1
+            ],
+            "msg": "/param/Xvol"
+        }]
+    },
+    {
+        "comment": "pan",
+        "midi": 16,
+        "midi_add": 1,
+        "count": 6,
+        "osc": [
+        {
+            "bounds": [
+                -1,
+                1
+            ],
+            "msg": "/param/Xpan"
+        }]
+    },
+    {
+        "button": true,
+        "comment": "flip rate",
+        "midi": 32,
+        "midi_add": 1,
+        "count": 6,
+        "osc": [
+        {
+            "msg": "/param/Xrate",
+            "toggle": [
+                3,
+                8
+            ]
+        }]
+    },
+    {
+        "button": true,
+        "comment": "rec toggle",
+        "midi": 48,
+        "midi_add": 1,
+        "count": 6,
+        "osc": [
+        {
+            "msg": "/param/Xrecording init",
+            "data": 2
+        }]
+    }]
+}
