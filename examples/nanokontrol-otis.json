@@ -1,0 +1,137 @@
+{
+    "events": [
+    {
+        "button": true,
+        "comment": "turning on compressor",
+        "midi": 38,
+        "osc": [
+        {
+            "data": 127,
+            "msg": "/param/compressor"
+        },
+        {
+            "data": 1,
+            "msg": "/param/comp_mix"
+        }]
+    },
+    {
+        "button": true,
+        "comment": "turning off compressor",
+        "midi": 54,
+        "osc": [
+        {
+            "data": 0,
+            "msg": "/param/compressor"
+        }]
+    },
+    {
+        "button": true,
+        "comment": "turning on reverb",
+        "midi": 39,
+        "osc": [
+        {
+            "data": 127,
+            "msg": "/param/reverb"
+        },
+        {
+            "data": -9,
+            "msg": "/param/rev_monitor_input"
+        },
+        {
+            "data": 6,
+            "msg": "/param/rev_return_level"
+        }]
+    },
+    {
+        "button": true,
+        "comment": "turning off reverb",
+        "midi": 55,
+        "osc": [
+        {
+            "data": 0,
+            "msg": "/param/reverb"
+        }]
+    },
+    {
+        "comment": "volume",
+        "midi": 0,
+        "osc": [
+        {
+            "bounds": [
+                0,
+                1
+            ],
+            "msg": "/param/1vol"
+        },
+        {
+            "bounds": [
+                0,
+                1
+            ],
+            "msg": "/param/2vol"
+        }]
+    },
+    {
+        "comment": "feedback",
+        "midi": 1,
+        "osc": [
+        {
+            "bounds": [
+                0,
+                1
+            ],
+            "msg": "/param/1feedback"
+        },
+        {
+            "bounds": [
+                0,
+                1
+            ],
+            "msg": "/param/2feedback"
+        }]
+    },
+    {
+        "comment": "loop start 1",
+        "midi": 2,
+        "osc": [
+        {
+            "bounds": [
+                0.43,
+                1.98
+            ],
+            "msg": "/param/1loop_start"
+        }]
+    },
+    {
+        "comment": "loop start 2",
+        "midi": 3,
+        "osc": [
+        {
+            "bounds": [
+                0,
+                1.96
+            ],
+            "msg": "/param/2loop_start"
+        }]
+    },
+    {
+        "button": true,
+        "comment": "flip rate",
+        "midi": 32,
+        "osc": [
+        {
+            "msg": "/param/1speed",
+            "toggle": [
+                1,
+                -1
+            ]
+        },
+        {
+            "msg": "/param/2speed",
+            "toggle": [
+                1,
+                -1
+            ]
+        }]
+    }]
+}
