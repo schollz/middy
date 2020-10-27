@@ -7,7 +7,7 @@
 --
 
 local midi2osc=include('lib/midi2osc')
+midi2osc:init('oooooo-nanokontrol.json',true)
 
 function init()
-  midi2osc:init('oooooo-nanokontrol.json')
 end
