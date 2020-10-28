@@ -1,5 +1,5 @@
 -- A small library to do midi -> osc
-local json=include("lib/json")
+local json=include("midi2osc/lib/json")
 local midi2osc={devices={},input=nil,settings={},debug=true}
 local PATH=_path.data..'midi2osc/'
 
@@ -94,7 +94,7 @@ midi2osc.on_input=function(data)
         return
       end
       -- a small debouncer
-      if current_time-e.last_msg_time<0.05 then
+      if current_time-e.last_msg_time<0.01 then
         return
       end
       for _,o in pairs(e.osc) do
@@ -112,7 +112,7 @@ midi2osc.on_input=function(data)
           nval=o.data
         end
         midi2osc.print("midi2osc",o.msg,nval)
-        osc.send({"localhost",10111},o.msg,nval)
+        osc.send({"localhost",10111},o.msg,{nval})
         midi2osc.settings.events[i].last_msg_time=current_time
       end
       midi2osc.print('midi2osc',e.comment)

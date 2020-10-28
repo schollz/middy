@@ -1,13 +1,14 @@
 -- midi2osc v0.6.0
---
+-- 
 --
 -- llllllll.co/t/midi2osc
 --
 --
 --
 
-local midi2osc=include('lib/midi2osc')
-midi2osc:init('oooooo-nanokontrol.json',true)
+local midi2osc = include('midi2osc/lib/midi2osc')
+midi2osc:init('nanokontrol-oooooo.json')
 
-function init()
+
+function init() 
 end
