@@ -81,30 +81,45 @@
         }]
     },
     {
-        "button": true,
-        "comment": "flip rate",
+        "comment": "recording trig",
         "midi": 32,
         "midi_add": 1,
         "count": 6,
         "osc": [
         {
-            "msg": "/param/Xrate",
+            "msg": "/param/Xrecording trig",
             "toggle": [
-                3,
-                8
+                0,
+                1
             ]
         }]
     },
     {
-        "button": true,
-        "comment": "rec toggle",
+        "comment": "play",
         "midi": 48,
         "midi_add": 1,
         "count": 6,
         "osc": [
         {
-            "msg": "/param/Xrecording init",
-            "data": 2
+            "msg": "/param/Xplay trig",
+            "toggle": [
+                0,
+                1
+            ]
+        }]
+    },
+    {
+        "comment": "stop",
+        "midi": 64,
+        "midi_add": 1,
+        "count": 6,
+        "osc": [
+        {
+            "msg": "/param/Xstop trig",
+            "toggle": [
+                0,
+                1
+            ]
         }]
     }]
 }
