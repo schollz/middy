@@ -3,7 +3,7 @@ local json=include("midi2osc/lib/json")
 local midi2osc={devices={},input=nil,settings={},debug=true}
 local PATH=_path.data..'midi2osc/'
 
-midi2osc.print=function(...)
+function midi2osc:print(...)
   local arg={...}
   if midi2osc.debug and arg~=nil then
     printResult=""
@@ -14,7 +14,10 @@ midi2osc.print=function(...)
   end
 end
 
-midi2osc.init=function(self,filename,debug)
+function midi2osc:init(o)
+	o= o or {}   -- create object if user does not provide one
+      setmetatable(o, self)
+      self.__index = self
   if debug~=nil then
     self.debug=debug
   else
