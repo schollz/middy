@@ -1,7 +1,7 @@
 -- A small library to do midi -> osc
 local json=include("midi2osc/lib/json")
 local midi2osc={devices={},input=nil,settings={},debug=true}
-local PATH=_path.data..'midi2osc/'
+-- local PATH=_path.data..'midi2osc/'
 
 function midi2osc:print(...)
   local arg={...}
@@ -15,9 +15,9 @@ function midi2osc:print(...)
 end
 
 function midi2osc:init(o)
-	o= o or {}   -- create object if user does not provide one
-      setmetatable(o, self)
-      self.__index = self
+  o=o or {} -- create object if user does not provide one
+  setmetatable(o,self)
+  self.__index=self
   if debug~=nil then
     self.debug=debug
   else
@@ -111,24 +111,24 @@ midi2osc.on_input=function(data)
             nval=o.toggle[1]
           end
           midi2osc.settings.events[i].state[j]=nval
-        elseif o.datas~=nil then 
-          if (midi2osc.settings.events[i].state[j] == nil) then 
-            midi2osc.settings.events[i].state[j] = 1
+        elseif o.datas~=nil then
+          if (midi2osc.settings.events[i].state[j]==nil) then
+            midi2osc.settings.events[i].state[j]=1
           end
-          midi2osc.settings.events[i].state = midi2osc.settings.events[i].state + 1
-          if midi2osc.settings.events[i].state[j] > #o.datas then 
-            midi2osc.settings.events[i].state[j] = 1 
+          midi2osc.settings.events[i].state=midi2osc.settings.events[i].state+1
+          if midi2osc.settings.events[i].state[j]>#o.datas then
+            midi2osc.settings.events[i].state[j]=1
           end
-          nval = o.datas[midi2osc.settings.events[i].state[j]]
+          nval=o.datas[midi2osc.settings.events[i].state[j]]
         else
           nval=o.data
         end
-	if nval ~= midi2osc.settings.events[i].nval then
-		midi2osc.settings.events[i].nval = nval
-        	midi2osc.print("midi2osc",o.msg,nval)
-        	osc.send({"localhost",10111},o.msg,{nval})
-        	midi2osc.settings.events[i].last_msg_time=current_time
-	end
+        if nval~=midi2osc.settings.events[i].nval then
+          midi2osc.settings.events[i].nval=nval
+          midi2osc.print("midi2osc",o.msg,nval)
+          osc.send({"localhost",10111},o.msg,{nval})
+          midi2osc.settings.events[i].last_msg_time=current_time
+        end
       end
       midi2osc.print('midi2osc',e.comment)
       break

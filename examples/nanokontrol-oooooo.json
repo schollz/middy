@@ -1,12 +1,12 @@
 {
     "events": [
     {
+        "comment": "toggle compressor",
         "button": true,
-        "comment": "turning on compressor",
-        "midi": 38,
+        "cc": 38,
         "osc": [
         {
-            "data": 127,
+            "datas": [0, 1],
             "msg": "/param/compressor"
         },
         {
@@ -15,19 +15,9 @@
         }]
     },
     {
+        "comment": "toggle reverb",
         "button": true,
-        "comment": "turning off compressor",
-        "midi": 54,
-        "osc": [
-        {
-            "data": 0,
-            "msg": "/param/compressor"
-        }]
-    },
-    {
-        "button": true,
-        "comment": "turning on reverb",
-        "midi": 39,
+        "cc": 39,
         "osc": [
         {
             "data": 127,
@@ -45,7 +35,7 @@
     {
         "button": true,
         "comment": "turning off reverb",
-        "midi": 55,
+        "cc": 55,
         "osc": [
         {
             "data": 0,
@@ -54,7 +44,7 @@
     },
     {
         "comment": "volume",
-        "midi": 0,
+        "cc": 0,
         "midi_add": 1,
         "count": 6,
         "osc": [
@@ -68,7 +58,7 @@
     },
     {
         "comment": "pan",
-        "midi": 16,
+        "cc": 16,
         "midi_add": 1,
         "count": 6,
         "osc": [
@@ -82,7 +72,7 @@
     },
     {
         "comment": "recording trig",
-        "midi": 32,
+        "cc": 32,
         "midi_add": 1,
         "count": 6,
         "osc": [
@@ -96,7 +86,7 @@
     },
     {
         "comment": "play",
-        "midi": 48,
+        "cc": 48,
         "midi_add": 1,
         "count": 6,
         "osc": [
@@ -110,7 +100,7 @@
     },
     {
         "comment": "stop",
-        "midi": 64,
+        "cc": 64,
         "midi_add": 1,
         "count": 6,
         "osc": [
