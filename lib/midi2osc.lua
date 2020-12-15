@@ -97,32 +97,35 @@ midi2osc.on_input=function(data)
       if current_time-e.last_msg_time<0.01 then
         return
       end
-      for _,o in pairs(e.osc) do
+      for j,o in pairs(e.osc) do
         if o.bounds~=nil then
           nval=nval*(o.bounds[2]-o.bounds[1])
           nval=nval+o.bounds[1]
         elseif o.toggle~=nil then
-          if e.state==o.toggle[1] then
+          if e.state[j]==o.toggle[1] then
             nval=o.toggle[2]
           else
             nval=o.toggle[1]
           end
-          midi2osc.settings.events[i].state=nval
+          midi2osc.settings.events[i].state[j]=nval
         elseif o.datas~=nil then 
-          if (midi2osc.settings.events[i].state == nil) then 
-            midi2osc.settings.events[i].state = 1
+          if (midi2osc.settings.events[i].state[j] == nil) then 
+            midi2osc.settings.events[i].state[j] = 1
           end
           midi2osc.settings.events[i].state = midi2osc.settings.events[i].state + 1
-          if midi2osc.settings.events[i].state > #o.datas then 
-            midi2osc.settings.events[i].state = 1 
+          if midi2osc.settings.events[i].state[j] > #o.datas then 
+            midi2osc.settings.events[i].state[j] = 1 
           end
-          nval = o.datas[midi2osc.settings.events[i].state]
+          nval = o.datas[midi2osc.settings.events[i].state[j]]
         else
           nval=o.data
         end
-        midi2osc.print("midi2osc",o.msg,nval)
-        osc.send({"localhost",10111},o.msg,{nval})
-        midi2osc.settings.events[i].last_msg_time=current_time
+	if nval ~= midi2osc.settings.events[i].nval then
+		midi2osc.settings.events[i].nval = nval
+        	midi2osc.print("midi2osc",o.msg,nval)
+        	osc.send({"localhost",10111},o.msg,{nval})
+        	midi2osc.settings.events[i].last_msg_time=current_time
+	end
       end
       midi2osc.print('midi2osc',e.comment)
       break
