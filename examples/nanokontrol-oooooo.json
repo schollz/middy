@@ -20,7 +20,7 @@
         "cc": 39,
         "osc": [
         {
-            "data": 127,
+            "datas": [0 127],
             "msg": "/param/reverb"
         },
         {
@@ -33,17 +33,7 @@
         }]
     },
     {
-        "button": true,
-        "comment": "turning off reverb",
-        "cc": 55,
-        "osc": [
-        {
-            "data": 0,
-            "msg": "/param/reverb"
-        }]
-    },
-    {
-        "comment": "volume",
+        "comment": "volume X",
         "cc": 0,
         "midi_add": 1,
         "count": 6,
@@ -57,7 +47,7 @@
         }]
     },
     {
-        "comment": "pan",
+        "comment": "pan X",
         "cc": 16,
         "midi_add": 1,
         "count": 6,
@@ -78,38 +68,36 @@
         "osc": [
         {
             "msg": "/param/Xrecording trig",
-            "toggle": [
-                0,
-                1
-            ]
+            "toggle": [0, 1]
         }]
     },
     {
-        "comment": "play",
+        "comment": "play all",
         "cc": 48,
-        "midi_add": 1,
-        "count": 6,
         "osc": [
         {
-            "msg": "/param/Xplay trig",
-            "toggle": [
-                0,
-                1
-            ]
-        }]
-    },
-    {
-        "comment": "stop",
-        "cc": 64,
-        "midi_add": 1,
-        "count": 6,
-        "osc": [
+            "msg": "/param/1play trig",
+            "datas": [0, 1]
+        },
         {
-            "msg": "/param/Xstop trig",
-            "toggle": [
-                0,
-                1
-            ]
+            "msg": "/param/2play trig",
+            "datas": [0, 1]
+        },
+        {
+            "msg": "/param/3play trig",
+            "datas": [0, 1]
+        },
+        {
+            "msg": "/param/4play trig",
+            "datas": [0, 1]
+        },
+        {
+            "msg": "/param/5play trig",
+            "datas": [0, 1]
+        },
+        {
+            "msg": "/param/6play trig",
+            "datas": [0, 1]
         }]
     }]
 }

@@ -21,6 +21,7 @@ function MM:new(o)
     else
       for j=1,e.count do
         e2={comment=e.comment..j,midi=e.midi+(j-1)*e.midi_add,osc={}}
+        e2.comment=e2.comment:gsub("X",j)
         if e.button~=nil then
           e2.button=true
         end
@@ -94,7 +95,7 @@ function MM:oninput(data)
             end
             send_val=o.datas[self.c.events[i].state[j].mem]
           else
-            -- slider selects closest value in discrete set
+            -- slider/toggle selects closest value in discrete set
             send_val=o.datas[math.floor(nval*(#o.datas-1.0)+1.0)]
           end
         elseif o.data~=nil then
