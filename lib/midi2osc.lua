@@ -108,6 +108,15 @@ midi2osc.on_input=function(data)
             nval=o.toggle[1]
           end
           midi2osc.settings.events[i].state=nval
+        elseif o.datas~=nil then 
+          if (midi2osc.settings.events[i].state == nil) then 
+            midi2osc.settings.events[i].state = 1
+          end
+          midi2osc.settings.events[i].state = midi2osc.settings.events[i].state + 1
+          if midi2osc.settings.events[i].state > #o.datas then 
+            midi2osc.settings.events[i].state = 1 
+          end
+          nval = o.datas[midi2osc.settings.events[i].state]
         else
           nval=o.data
         end
