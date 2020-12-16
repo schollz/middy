@@ -4,14 +4,14 @@
 -- MidiMidi:init({log_level="debug",filename="/home/we/dust/code/midimidi/examples/nanokontrol-oooooo.json",device=1})
 
 local json=include("midimidi/lib/json")
-MidiMidi={log_level="",device=1,file_loaded=false}
+MidiMidi={log_level="",device=1,file_loaded=false,recording={},is_recording=false,subdivisions=16,measures=4,recording_start_beat=0,beats_per_measure=4}
 
 function MidiMidi:init(o)
   o=o or {}
   setmetatable(o,self)
   self.__index=self
   
-  if o.filename ~= nil and util.file_exists(o.filename) then
+  if o.filename~=nil and util.file_exists(o.filename) then
     -- load file
     local f=assert(io.open(o.filename,"rb"))
     local content=f:read("*all")
@@ -62,9 +62,39 @@ function MidiMidi:init(o)
   return o
 end
 
+function MidiMidi:recording_start()
+  self.recording={}
+  self.recording_start_beat=clock.get_beats()
+  self.is_recording=true
+end
+
+function MidiMidi:recording_stop()
+  -- TODO save recording
+  print(json.encode(self.recording))
+  self.is_recording=false
+end
+
+function MidiMidi:process_note(d)
+  if not self.is_recording then
+    do return end
+  end
+  beat=MidiMidi.round_to_nearest(clock.get_beats()-self.recording_start_beat,4/self.subdivisions)
+  if beat>self.measures*self.beats_per_measure then
+    return self:recording_stop()
+  end
+  -- add note to recording
+  if self.recording[beat]==nil then
+    self.recording[beat]={}
+  end
+  table.insert(self.recording[beat],d)
+end
+
 function MidiMidi:process(data)
   local d=midi.to_msg(data)
   self:debug('MidiMidi',d.type,d.cc,d.val)
+  if d.type=="note_on" or d.type=="note_off" then
+    return self:process_note(d)
+  end
   if not self.file_loaded then
     self:debug("file not loaded")
     do return end
@@ -169,6 +199,12 @@ MidiMidi.deepcopy=function(orig)
     copy=orig
   end
   return copy
+end
+
+-- http://phrogz.net/round-to-nearest-via-modulus-division
+MidiMidi.round_to_nearest=function(i,n)
+  local m=n/2
+  return i+m-(i+m)%n
 end
 
 return MidiMidi
