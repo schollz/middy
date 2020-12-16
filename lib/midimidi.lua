@@ -4,7 +4,18 @@
 -- MidiMidi:init({log_level="debug",filename="/home/we/dust/code/midimidi/examples/nanokontrol-oooooo.json",device=1})
 
 local json=include("midimidi/lib/json")
-MidiMidi={log_level="",device=1,file_loaded=false,recording={},is_recording=false,subdivisions=16,measures=4,recording_start_beat=0,beats_per_measure=4}
+MidiMidi={
+  log_level="",
+  device=1,
+  file_loaded=false,
+  recording={},
+  is_recording=false,
+  subdivisions=16,
+  measures=4,
+  recording_start_beat=0,
+  beats_per_measure=4,
+  recording_start_with_beat=true
+}
 
 function MidiMidi:init(o)
   o=o or {}
@@ -96,16 +107,25 @@ function MidiMidi:process_note(d)
   if not self.is_recording then
     do return end
   end
+  
+  -- reset timer on first beat if initializing to first beat
+  if MidiMidi.table_empty(self.recording) and self.recording_start_with_beat then
+    self.recording_start_beat=clock.get_beats()
+  end
+  
+  -- determine current beat
   beat=MidiMidi.round_to_nearest(clock.get_beats()-self.recording_start_beat,4/self.subdivisions)
   if beat>self.measures*self.beats_per_measure then
     return self:recording_stop()
   end
+  
   -- add note to recording
+  self:debug("adding note "..json.encode(d))
   if self.recording[beat]==nil then
     self.recording[beat]={}
   end
-  self:debug("adding note "..json.encode(d))
   table.insert(self.recording[beat],d)
+  
 end
 
 function MidiMidi:process(data)
@@ -224,6 +244,13 @@ end
 MidiMidi.round_to_nearest=function(i,n)
   local m=n/2
   return i+m-(i+m)%n
+end
+
+MidiMidi.table_empty=function(t)
+  for _,_ in pairs(t) do
+    return false
+  end
+  return true
 end
 
 return MidiMidi
