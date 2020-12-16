@@ -1,103 +1,101 @@
+[
 {
-    "events": [
+    "comment": "toggle compressor",
+    "button": true,
+    "cc": 38,
+    "commands": [
     {
-        "comment": "toggle compressor",
-        "button": true,
-        "cc": 38,
-        "osc": [
-        {
-            "datas": [0, 1],
-            "msg": "/param/compressor"
-        },
-        {
-            "data": 1,
-            "msg": "/param/comp_mix"
-        }]
+        "datas": [0, 1],
+        "msg": "/param/compressor"
     },
     {
-        "comment": "toggle reverb",
-        "button": true,
-        "cc": 39,
-        "osc": [
-        {
-            "datas": [0 127],
-            "msg": "/param/reverb"
-        },
-        {
-            "data": -9,
-            "msg": "/param/rev_monitor_input"
-        },
-        {
-            "data": 6,
-            "msg": "/param/rev_return_level"
-        }]
-    },
-    {
-        "comment": "volume X",
-        "cc": 0,
-        "midi_add": 1,
-        "count": 6,
-        "osc": [
-        {
-            "bounds": [
-                0,
-                1
-            ],
-            "msg": "/param/Xvol"
-        }]
-    },
-    {
-        "comment": "pan X",
-        "cc": 16,
-        "midi_add": 1,
-        "count": 6,
-        "osc": [
-        {
-            "bounds": [
-                -1,
-                1
-            ],
-            "msg": "/param/Xpan"
-        }]
-    },
-    {
-        "comment": "recording trig",
-        "cc": 32,
-        "midi_add": 1,
-        "count": 6,
-        "osc": [
-        {
-            "msg": "/param/Xrecording trig",
-            "toggle": [0, 1]
-        }]
-    },
-    {
-        "comment": "play all",
-        "cc": 48,
-        "osc": [
-        {
-            "msg": "/param/1play trig",
-            "datas": [0, 1]
-        },
-        {
-            "msg": "/param/2play trig",
-            "datas": [0, 1]
-        },
-        {
-            "msg": "/param/3play trig",
-            "datas": [0, 1]
-        },
-        {
-            "msg": "/param/4play trig",
-            "datas": [0, 1]
-        },
-        {
-            "msg": "/param/5play trig",
-            "datas": [0, 1]
-        },
-        {
-            "msg": "/param/6play trig",
-            "datas": [0, 1]
-        }]
+        "data": 1,
+        "msg": "/param/comp_mix"
     }]
-}
+},
+{
+    "comment": "toggle reverb",
+    "button": true,
+    "cc": 39,
+    "commands": [
+    {
+        "datas": [0 127],
+        "msg": "/param/reverb"
+    },
+    {
+        "data": -9,
+        "msg": "/param/rev_monitor_input"
+    },
+    {
+        "data": 6,
+        "msg": "/param/rev_return_level"
+    }]
+},
+{
+    "comment": "volume X",
+    "cc": 0,
+    "midi_add": 1,
+    "count": 6,
+    "commands": [
+    {
+        "bounds": [
+            0,
+            1
+        ],
+        "msg": "/param/Xvol"
+    }]
+},
+{
+    "comment": "pan X",
+    "cc": 16,
+    "midi_add": 1,
+    "count": 6,
+    "commands": [
+    {
+        "bounds": [
+            -1,
+            1
+        ],
+        "msg": "/param/Xpan"
+    }]
+},
+{
+    "comment": "recording trig",
+    "cc": 32,
+    "midi_add": 1,
+    "count": 6,
+    "commands": [
+    {
+        "msg": "/param/Xrecording trig",
+        "datas": [0, 1]
+    }]
+},
+{
+    "comment": "play all",
+    "cc": 48,
+    "commands": [
+    {
+        "msg": "/param/1play trig",
+        "datas": [0, 1]
+    },
+    {
+        "msg": "/param/2play trig",
+        "datas": [0, 1]
+    },
+    {
+        "msg": "/param/3play trig",
+        "datas": [0, 1]
+    },
+    {
+        "msg": "/param/4play trig",
+        "datas": [0, 1]
+    },
+    {
+        "msg": "/param/5play trig",
+        "datas": [0, 1]
+    },
+    {
+        "msg": "/param/6play trig",
+        "datas": [0, 1]
+    }]
+}]
