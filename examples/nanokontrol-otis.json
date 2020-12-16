@@ -1,76 +1,74 @@
+[
 {
-    "events": [
+    "comment": "loop start 1",
+    "cc": 2,
+    "commands": [
     {
-        "comment": "loop start 1",
-        "midi": 2,
-        "osc": [
-        {
-            "bounds": [
-                0.43,
-                1.98
-            ],
-            "msg": "/param/1loop_start"
-        }]
-    },
-    {
-        "comment": "loop start 2",
-        "midi": 3,
-        "osc": [
-        {
-            "bounds": [
-                0,
-                1.96
-            ],
-            "msg": "/param/2loop_start"
-        }]
-    },
-    {
-        "comment": "volume",
-        "midi": 0,
-        "osc": [
-        {
-            "bounds": [
-                0,
-                1
-            ],
-            "msg": "/param/1vol"
-        },
-        {
-            "bounds": [
-                0,
-                1
-            ],
-            "msg": "/param/2vol"
-        }]
-    },
-    {
-        "comment": "feedback",
-        "midi": 1,
-        "osc": [
-        {
-            "bounds": [
-                0,
-                1
-            ],
-            "msg": "/param/1feedback"
-        },
-        {
-            "bounds": [
-                0,
-                1
-            ],
-            "msg": "/param/2feedback"
-        }]
-    },
-    {
-        "comment": "flip rate",
-        "cc": 32,
-        "midi_add": 1,
-        "count": 2,
-        "osc": [
-        {
-            "msg": "/param/Xspeed",
-            "datas": [0, 1]
-        }]
+        "bounds": [
+            0.43,
+            1.98
+        ],
+        "msg": "/param/1loop_start"
     }]
-}
+},
+{
+    "comment": "loop start 2",
+    "cc": 3,
+    "commands": [
+    {
+        "bounds": [
+            0,
+            1.96
+        ],
+        "msg": "/param/2loop_start"
+    }]
+},
+{
+    "comment": "volume",
+    "cc": 0,
+    "commands": [
+    {
+        "bounds": [
+            0,
+            1
+        ],
+        "msg": "/param/1vol"
+    },
+    {
+        "bounds": [
+            0,
+            1
+        ],
+        "msg": "/param/2vol"
+    }]
+},
+{
+    "comment": "feedback",
+    "cc": 1,
+    "commands": [
+    {
+        "bounds": [
+            0,
+            1
+        ],
+        "msg": "/param/1feedback"
+    },
+    {
+        "bounds": [
+            0,
+            1
+        ],
+        "msg": "/param/2feedback"
+    }]
+},
+{
+    "comment": "flip rate",
+    "cc": 32,
+    "add": 1,
+    "count": 2,
+    "commands": [
+    {
+        "msg": "/param/Xspeed",
+        "datas": [0, 1]
+    }]
+}]

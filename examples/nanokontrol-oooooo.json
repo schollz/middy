@@ -2,24 +2,33 @@
 {
     "comment": "toggle compressor",
     "button": true,
-    "cc": 38,
+    "cc": 58,
     "commands": [
     {
-        "datas": [0, 1],
+        "datas": [
+            1,
+            2
+        ],
         "msg": "/param/compressor"
     },
     {
-        "data": 1,
+        "datas": [
+            0,
+            1
+        ],
         "msg": "/param/comp_mix"
     }]
 },
 {
     "comment": "toggle reverb",
     "button": true,
-    "cc": 39,
+    "cc": 59,
     "commands": [
     {
-        "datas": [0 127],
+        "datas": [
+            0,
+            127
+        ],
         "msg": "/param/reverb"
     },
     {
@@ -34,7 +43,7 @@
 {
     "comment": "volume X",
     "cc": 0,
-    "midi_add": 1,
+    "add": 1,
     "count": 6,
     "commands": [
     {
@@ -46,56 +55,171 @@
     }]
 },
 {
-    "comment": "pan X",
+    "comment": "filter X",
     "cc": 16,
-    "midi_add": 1,
+    "add": 1,
     "count": 6,
     "commands": [
     {
         "bounds": [
-            -1,
+            0,
+            20000
+        ],
+        "msg": "/param/Xfilter_frequency"
+    }]
+},
+{
+    "comment": "rate lfo all",
+    "cc": 22,
+    "commands": [
+    {
+        "data": 1,
+        "msg": "/param/1rate lfo amp"
+    },
+    {
+        "datas": [
+            0,
+            0.06,
+            0.09,
+            0.12,
             1
         ],
-        "msg": "/param/Xpan"
+        "msg": "/param/1rate lfo period"
     }]
 },
 {
     "comment": "recording trig",
-    "cc": 32,
-    "midi_add": 1,
+    "cc": 64,
+    "add": 1,
     "count": 6,
     "commands": [
     {
         "msg": "/param/Xrecording trig",
-        "datas": [0, 1]
+        "datas": [
+            0,
+            1
+        ]
+    }]
+},
+{
+    "comment": "stop trig",
+    "cc": 32,
+    "add": 1,
+    "count": 6,
+    "commands": [
+    {
+        "msg": "/param/Xstop trig",
+        "datas": [
+            0,
+            1
+        ]
+    }]
+},
+{
+    "comment": "play trig",
+    "cc": 48,
+    "add": 1,
+    "count": 6,
+    "commands": [
+    {
+        "msg": "/param/Xplay trig",
+        "datas": [
+            0,
+            1
+        ]
     }]
 },
 {
     "comment": "play all",
-    "cc": 48,
+    "cc": 41,
     "commands": [
     {
         "msg": "/param/1play trig",
-        "datas": [0, 1]
+        "datas": [
+            0,
+            1
+        ]
     },
     {
         "msg": "/param/2play trig",
-        "datas": [0, 1]
+        "datas": [
+            0,
+            1
+        ]
     },
     {
         "msg": "/param/3play trig",
-        "datas": [0, 1]
+        "datas": [
+            0,
+            1
+        ]
     },
     {
         "msg": "/param/4play trig",
-        "datas": [0, 1]
+        "datas": [
+            0,
+            1
+        ]
     },
     {
         "msg": "/param/5play trig",
-        "datas": [0, 1]
+        "datas": [
+            0,
+            1
+        ]
     },
     {
         "msg": "/param/6play trig",
-        "datas": [0, 1]
+        "datas": [
+            0,
+            1
+        ]
+    }]
+},
+{
+    "comment": "stop all",
+    "cc": 42,
+    "commands": [
+    {
+        "msg": "/param/1stop trig",
+        "datas": [
+            0,
+            1
+        ]
+    },
+    {
+        "msg": "/param/2stop trig",
+        "datas": [
+            0,
+            1
+        ]
+    },
+    {
+        "msg": "/param/3stop trig",
+        "datas": [
+            0,
+            1
+        ]
+    },
+    {
+        "msg": "/param/4stop trig",
+        "datas": [
+            0,
+            1
+        ]
+    },
+    {
+        "msg": "/param/5stop trig",
+        "datas": [
+            0,
+            1
+        ]
+    },
+    {
+        "msg": "/param/6stop trig",
+        "datas": [
+            0,
+            1
+        ]
     }]
 }]

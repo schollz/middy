@@ -4,14 +4,14 @@
 -- MidiMidi:init({log_level="debug",filename="/home/we/dust/code/midimidi/examples/nanokontrol-oooooo.json",device=1})
 
 local json=include("midimidi/lib/json")
-MidiMidi={log_level="info",device=1,file_loaded=false}
+MidiMidi={log_level="",device=1,file_loaded=false}
 
 function MidiMidi:init(o)
   o=o or {}
   setmetatable(o,self)
   self.__index=self
   
-  if util.file_exists(o.filename) then
+  if o.filename ~= nil and util.file_exists(o.filename) then
     -- load file
     local f=assert(io.open(o.filename,"rb"))
     local content=f:read("*all")
@@ -26,7 +26,7 @@ function MidiMidi:init(o)
         table.insert(events,e)
       else
         for j=1,e.count do
-          e2={comment=e.comment..j,midi=e.midi+(j-1)*e.midi_add,osc={}}
+          e2={comment=e.comment..j,cc=e.cc+(j-1)*e.add,commands={}}
           e2.comment=e2.comment:gsub("X",j)
           if e.button~=nil then
             e2.button=true
@@ -45,7 +45,7 @@ function MidiMidi:init(o)
     for i,e in pairs(events) do
       events[i].state={}
       for j,_ in pairs(e.commands) do
-        events[i].state[j]={last_val=0,mem=0}
+        events[i].state[j]={last_val=0,mem=1}
       end
       events[i].last_msg_time=MidiMidi.current_time()
     end
@@ -56,20 +56,24 @@ function MidiMidi:init(o)
   -- intiailize midi
   o:info("midimidi listening to device "..o.device)
   o.input=midi.connect(o.device)
-  o.input.event=o:on_input
+  o.input.event=function(data)
+    o:process(data)
+  end
   return o
 end
 
-function MidiMidi:oninput(data)
+function MidiMidi:process(data)
   local d=midi.to_msg(data)
   self:debug('MidiMidi',d.type,d.cc,d.val)
   if not self.file_loaded then
+    self:debug("file not loaded")
     do return end
   end
   current_time=MidiMidi.current_time()
   for i,e in pairs(self.events) do
     -- check if the midi is equal to the cc value
     if e.cc==d.cc then
+      self:debug("MidiMidi",e.comment)
       -- buttons only toggle when hitting 127
       if e.button~=nil and d.val~=127 then
         return
@@ -108,7 +112,7 @@ function MidiMidi:oninput(data)
           send_val=o.data
         end
         if send_val~=nil and send_val~=self.events[i].state[j].last_val then
-          self:info("MidiMidi",e.comment,o.msg,send_val)
+          self:debug("MidiMidi",e.comment,o.msg,send_val)
           osc.send({"localhost",10111},o.msg,{send_val})
           self.events[i].last_msg_time=current_time
           self.events[i].state[j].last_val=send_val
