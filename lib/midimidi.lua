@@ -59,16 +59,34 @@ function MidiMidi:init(o)
   o.input.event=function(data)
     o:process(data)
   end
+  
   return o
 end
 
+function MidiMidi:add_menu()
+  -- add parameters
+  params:add_group("MIDIMIDI",2)
+  params:add{type='binary',name='toggle recording',id='midimidi_record',behavior='momentary',action=function(v)
+    if self.is_recording then
+      self:recording_stop()
+      params:set("midimidi_messsage","started recording.")
+    else
+      self:recording_start()
+      params:set("midimidi_messsage","stopped recording.")
+    end
+  end}
+  params:add_text('midimidi_messsage',">","")
+end
+
 function MidiMidi:recording_start()
+  self:info("recording_start")
   self.recording={}
   self.recording_start_beat=clock.get_beats()
   self.is_recording=true
 end
 
 function MidiMidi:recording_stop()
+  self:info("recording_stop")
   -- TODO save recording
   print(json.encode(self.recording))
   self.is_recording=false
@@ -86,6 +104,7 @@ function MidiMidi:process_note(d)
   if self.recording[beat]==nil then
     self.recording[beat]={}
   end
+  self:debug("adding note "..json.encode(d))
   table.insert(self.recording[beat],d)
 end
 
