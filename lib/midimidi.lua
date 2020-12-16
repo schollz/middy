@@ -80,7 +80,7 @@ function MidiMidi:process(data)
       end
       
       -- a small debouncer
-      if current_time-e.last_msg_time<0.01 then
+      if current_time-e.last_msg_time<0.05 then
         return
       end
       

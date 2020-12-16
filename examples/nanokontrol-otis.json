@@ -63,12 +63,16 @@
 },
 {
     "comment": "flip rate",
+    "button": true,
     "cc": 32,
     "add": 1,
     "count": 2,
     "commands": [
     {
         "msg": "/param/Xspeed",
-        "datas": [0, 1]
+        "datas": [
+            1,
+            -1
+        ]
     }]
 }]
