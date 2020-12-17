@@ -13,7 +13,7 @@ MidiMidi={
   is_recording=false,
   is_playing=false,
   subdivisions=16,
-  measures=1,
+  measures=2,
   recording_start_beat=0,
   beats_per_measure=4,
   recording_start_with_beat=true,
@@ -87,11 +87,10 @@ end
 function MidiMidi:add_menu()
   print("add_menu")
   params:add_group("MIDIMIDI",6)
+  params:add_text('midimidi_messsage',">","")
   params:add{type='binary',name='initialize midi',id='midimidi_init',behavior='trigger',action=function(v)
     self:init_midi()
   end}
-  params:add_control("midimidi_recordnum","recording number",controlspec.new(0,1000,'lin',1,1,'',1/1000))
-  params:add_option("midimidi_loopplayback","loop playback",{"no","yes"},1)
   params:add{type='binary',name='toggle recording',id='midimidi_record',behavior='trigger',action=function(v)
     if self.is_recording then
       self:recording_stop()
@@ -106,7 +105,8 @@ function MidiMidi:add_menu()
       self:playback_stop()
     end
   end}
-  params:add_text('midimidi_messsage',">","")
+  params:add_control("midimidi_recordnum","recording number",controlspec.new(0,1000,'lin',1,1,'',1/1000))
+  params:add_option("midimidi_loopplayback","loop playback",{"no","yes"},1)
 end
 
 function MidiMidi:playback_stop()
