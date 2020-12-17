@@ -7,16 +7,11 @@ local json=include("midimidi/lib/json")
 
 MidiMidi={
   log_level="",
-  device=1,
   file_loaded=false,
   recording={},
   is_recording=false,
   is_playing=false,
-  subdivisions=16,
-  measures=2,
   recording_start_beat=0,
-  beats_per_measure=4,
-  recording_start_with_beat=true,
   clock_stop=0,
   notes_on={},
 }
@@ -76,7 +71,7 @@ end
 
 function MidiMidi:init_midi()
   -- intiailize midi
-  print("midimidi listening to device "..self.device)
+  print("midimidi listening to device "..params:get("midimidi_device"))
   m=midi.connect()
   m.event=function(data)
     self:process(data)
@@ -85,9 +80,8 @@ function MidiMidi:init_midi()
 end
 
 function MidiMidi:add_menu()
-  print("add_menu")
   params:add_group("MIDIMIDI",6)
-  params:add_text('midimidi_messsage',">","")
+  params:add_text('midimidi_messsage',">","need to initialize.")
   params:add{type='binary',name='initialize midi',id='midimidi_init',behavior='trigger',action=function(v)
     self:init_midi()
   end}
@@ -107,6 +101,11 @@ function MidiMidi:add_menu()
   end}
   params:add_control("midimidi_recordnum","recording number",controlspec.new(0,1000,'lin',1,1,'',1/1000))
   params:add_option("midimidi_loopplayback","loop playback",{"no","yes"},1)
+  params:add_option("midimidi_measures","measures",controlspec.new(1,16,'lin',1,1,'',1/16))
+  params:add_option("midimidi_beats_per_measure","beats per measure",controlspec.new(1,16,'lin',1,4,'',1/16))
+  params:add_option("midimidi_subdivision","subdivision",controlspec.new(1,32,'lin',1,4,'',1/32))
+  params:add_option("midimidi_playwithstart","op-1 start/stop",{"no","yes"},1)
+  params:add_option("midimidi_device","midi device",controlspec.new(1,4,'lin',1,1,'',1/4))
 end
 
 function MidiMidi:playback_stop()
@@ -176,7 +175,7 @@ function MidiMidi:recording_start()
   self.recording_start_beat=clock.get_beats()
   self.is_recording=true
   self.clock_stop = clock.run(function()
-    clock.sleep(clock.get_beat_sec()*self.measures*self.beats_per_measure)
+    clock.sleep(clock.get_beat_sec()*params:get("midimidi_measures")*params:get("midimidi_beats_per_measure"))
     self:recording_stop()
   end)
 end
@@ -186,7 +185,7 @@ function MidiMidi:recording_stop()
   params:set("midimidi_messsage","stopped recording.")
   local fname = _path.data.."midimidi/"..params:get("midimidi_recordnum")..".json"
   file = io.open(fname, "w+")
-  file:write(json.encode({notes=self.recording,subdivisions=self.subdivisions,measures=self.measures,beats_per_measure=self.beats_per_measure}))
+  file:write(json.encode({notes=self.recording,subdivisions=params:get("midimidi_subdivision"),measures=params:get("midimidi_measures"),beats_per_measure=params:get("midimidi_beats_per_measure")}))
   file:close()
   self.is_recording=false
   clock.cancel(self.clock_stop)
@@ -201,21 +200,21 @@ function MidiMidi:process_note(d)
   end
   
   -- reset timer on first beat if initializing to first beat
-  if MidiMidi.table_empty(self.recording) and self.recording_start_with_beat then
+  if MidiMidi.table_empty(self.recording) and params:get("midimidi_playwithstart")==2 then
     self.recording_start_beat=clock.get_beats()
     -- restart stop clock
     clock.cancel(self.clock_stop)
     self.clock_stop = clock.run(function()
-      clock.sleep(clock.get_beat_sec()*self.measures*self.beats_per_measure)
+      clock.sleep(clock.get_beat_sec()*params:get("midimidi_measures")*params:get("midimidi_beats_per_measure"))
       self:recording_stop()
     end)
   end
   
   -- determine current beat
-  beat=MidiMidi.round_to_nearest(clock.get_beats()-self.recording_start_beat,4/self.subdivisions)
-  if beat>self.measures*self.beats_per_measure then
+  beat=MidiMidi.round_to_nearest(clock.get_beats()-self.recording_start_beat,4/params:get("midimidi_subdivision"))
+  if beat>params:get("midimidi_measures")*params:get("midimidi_beats_per_measure") then
     return self:recording_stop()
-  elseif beat==self.measures*self.beats_per_measure then 
+  elseif beat==params:get("midimidi_measures")*params:get("midimidi_beats_per_measure") then 
     beat = 0
     table.insert(self.recording,{beat=beat,ch=d.ch,vel=d.vel,type=d.type,note=d.note})
     return self:recording_stop()
