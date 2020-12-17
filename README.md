@@ -1,19 +1,19 @@
-# midimidi
+# middy
 
 expanding midi mapping functionality on norns.
 
 to get started, add the following to any norns script, preferable in the `init()` function:
 
 ```lua
-local MidiMidi=include("midimidi/lib/midimidi")
-MidiMidi:init({log_level="debug",device=1})
+local Middy=include("middy/lib/middy")
+Middy:init({log_level="debug",device=1})
 ```
 
 then when you run that script, you will see the output of midi commands to maiden.
 
 ### basic button
 
-to set those commands to do something, you need to create a *midimidi* json file. a simple json file might be like this:
+to set those commands to do something, you need to create a *middy* json file. a simple json file might be like this:
 
 ```json
 [
@@ -31,7 +31,7 @@ to set those commands to do something, you need to create a *midimidi* json file
 now make sure to designate where your file is in your script by changing the initilization to:
 
 ```
-MidiMidi:init({log_level="debug",device=1,filename="<path to your file>"})
+Middy:init({log_level="debug",device=1,filename="<path to your file>"})
 ```
 
 in that example, anytime a MIDI cc of 58 comes in, it will turn the compressor on/off, by toggling between the data values. the `button` directive indicates that these commands are only activated when the midi value comes in as 127.
@@ -71,7 +71,7 @@ if you include the `bounds` it will map the 0-127 input continously to the bound
 
 ### chaining midi commands to single input
 
-the nice thing about *midimidi* is that you can easily chain MIDI commands. for example, this will extend the previous example to also
+the nice thing about *middy* is that you can easily chain MIDI commands. for example, this will extend the previous example to also
 change the compressor value after toggling.
 
 ```json
