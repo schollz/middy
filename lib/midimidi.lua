@@ -1,17 +1,13 @@
 -- A small library to do extend midi mapping functionality
--- usage:
--- local MidiMidi=include("midimidi/lib/midimidi")
--- MidiMidi:init({log_level="debug",filename="/home/we/dust/code/midimidi/examples/nanokontrol-oooooo.json",device=1})
 
 local json=include("midimidi/lib/json")
 
 MidiMidi={
-  log_level="",
   file_loaded=false,
-  recording={},
   is_recording=false,
-  is_playing=false,
   recording_start_beat=0,
+  recorded_notes={},
+  is_playing=false,
   clock_stop=0,
   notes_on={},
 }
@@ -171,7 +167,7 @@ end
 function MidiMidi:recording_start()
   print("recording_start")
   params:set("midimidi_messsage","started recording.")
-  self.recording={}
+  self.recorded_notes={}
   self.recording_start_beat=clock.get_beats()
   self.is_recording=true
   self.clock_stop=clock.run(function()
@@ -200,7 +196,7 @@ function MidiMidi:process_note(d)
   end
 
   -- reset timer on first beat if initializing to first beat
-  if MidiMidi.table_empty(self.recording) and params:get("midimidi_playwithstart")==2 then
+  if MidiMidi.table_empty(self.recorded_notes) and params:get("midimidi_playwithstart")==2 then
     self.recording_start_beat=clock.get_beats()
     -- restart stop clock
     clock.cancel(self.clock_stop)
@@ -216,12 +212,12 @@ function MidiMidi:process_note(d)
     return self:recording_stop()
   elseif beat==params:get("midimidi_measures")*params:get("midimidi_beats_per_measure") then
     beat=0
-    table.insert(self.recording,{beat=beat,ch=d.ch,vel=d.vel,type=d.type,note=d.note})
+    table.insert(self.recorded_notes,{beat=beat,ch=d.ch,vel=d.vel,type=d.type,note=d.note})
     return self:recording_stop()
   end
   -- add note to recording
   print("adding note "..json.encode(d))
-  table.insert(self.recording,{beat=beat,ch=d.ch,vel=d.vel,type=d.type,note=d.note})
+  table.insert(self.recorded_notes,{beat=beat,ch=d.ch,vel=d.vel,type=d.type,note=d.note})
 end
 
 function MidiMidi:process(data)
