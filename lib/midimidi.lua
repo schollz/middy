@@ -105,6 +105,7 @@ function MidiMidi:add_menu()
   params:add_control("midimidi_subdivision","subdivision",controlspec.new(1,32,'lin',1,16,'',1/32))
   params:add_option("midimidi_playwithstart","start recording on note",{"no","yes"},2)
   params:add_control("midimidi_device","midi device",controlspec.new(1,4,'lin',1,1,'',1/4))
+  params:add_option("midimidi_op1","op1 start/stop",{"no","yes"},2)
 end
 
 function MidiMidi:playback_stop()
@@ -229,12 +230,12 @@ function MidiMidi:process(data)
   if d.type=="note_on" or d.type=="note_off" then
     return self:process_note(d)
   end
-  -- TODO add option for this
+  if not self.is_recording and params:get("midimidi_op1")==2 then 
   if d.type=="continue" then 
       return self:playback_start()
-  end
-  if d.type=="stop" then 
+  elseif d.type=="stop" then 
     return self:playback_stop()
+  end
   end
   print('MidiMidi',d.type,d.cc,d.val)
   if not self.file_loaded then
