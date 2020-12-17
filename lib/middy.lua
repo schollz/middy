@@ -2,7 +2,7 @@
 
 local json=include("midimidi/lib/json")
 
-MidiMidi={
+Middy={
   file_loaded=false,
   is_recording=false,
   recording_start_beat=0,
@@ -14,14 +14,14 @@ MidiMidi={
 
 local m=nil
 
-function MidiMidi:init(o)
+function Middy:init(o)
   o=o or {}
   setmetatable(o,self)
   self.__index=self
   return o
 end
 
-function MidiMidi:init_midi()
+function Middy:init_midi()
   -- intiailize midi
   print("midimidi listening to device "..params:get("midimidi_device"))
   m=midi.connect()
@@ -31,7 +31,7 @@ function MidiMidi:init_midi()
   params:set("midimidi_messsage","initialized.")
 end
 
-function MidiMidi:init_map(filename)
+function Middy:init_map(filename)
   -- load file
   self.filename=filename
   local f=assert(io.open(self.filename,"rb"))
@@ -53,7 +53,7 @@ function MidiMidi:init_map(filename)
           e2.button=true
         end
         for k,o in pairs(e.commands) do
-          o2=MidiMidi.deepcopy(o)
+          o2=Middy.deepcopy(o)
           o2.msg=o2.msg:gsub("X",j)
           table.insert(e2.commands,o2)
         end
@@ -68,13 +68,13 @@ function MidiMidi:init_map(filename)
     for j,_ in pairs(e.commands) do
       events[i].state[j]={last_val=0,mem=1}
     end
-    events[i].last_msg_time=MidiMidi.current_time()
+    events[i].last_msg_time=Middy.current_time()
   end
   self.events=events
   self.file_loaded=true
 end
 
-function MidiMidi:init_menu()
+function Middy:init_menu()
   params:add_group("MIDIMIDI",11)
   params:add_text('midimidi_messsage',">","need to initialize.")
   params:add{type='binary',name='initialize midi',id='midimidi_init',behavior='trigger',action=function(v)
@@ -104,7 +104,7 @@ function MidiMidi:init_menu()
   params:add_option("midimidi_op1","op1 start/stop",{"no","yes"},2)
 end
 
-function MidiMidi:playback_stop()
+function Middy:playback_stop()
   self.is_playing=false
   params:set("midimidi_messsage","stopped playback.")
   clock.cancel(self.clock_stop)
@@ -113,7 +113,7 @@ function MidiMidi:playback_stop()
   end
 end
 
-function MidiMidi:playback_start()
+function Middy:playback_start()
   params:set("midimidi_messsage","started playback.")
   local fname=_path.data.."midimidi/"..params:get("midimidi_recordnum")..".json"
   print(fname)
@@ -164,7 +164,7 @@ function MidiMidi:playback_start()
   end)
 end
 
-function MidiMidi:recording_start()
+function Middy:recording_start()
   print("recording_start")
   params:set("midimidi_messsage","started recording.")
   self.recorded_notes={}
@@ -176,7 +176,7 @@ function MidiMidi:recording_start()
   end)
 end
 
-function MidiMidi:recording_stop()
+function Middy:recording_stop()
   print("recording_stop")
   params:set("midimidi_messsage","stopped recording.")
   local fname=_path.data.."midimidi/"..params:get("midimidi_recordnum")..".json"
@@ -187,7 +187,7 @@ function MidiMidi:recording_stop()
   clock.cancel(self.clock_stop)
 end
 
-function MidiMidi:process_note(d)
+function Middy:process_note(d)
   for k,v in pairs(d) do
     print(k,v)
   end
@@ -196,7 +196,7 @@ function MidiMidi:process_note(d)
   end
 
   -- reset timer on first beat if initializing to first beat
-  if MidiMidi.table_empty(self.recorded_notes) and params:get("midimidi_playwithstart")==2 then
+  if Middy.table_empty(self.recorded_notes) and params:get("midimidi_playwithstart")==2 then
     self.recording_start_beat=clock.get_beats()
     -- restart stop clock
     clock.cancel(self.clock_stop)
@@ -207,7 +207,7 @@ function MidiMidi:process_note(d)
   end
 
   -- determine current beat
-  beat=MidiMidi.round_to_nearest(clock.get_beats()-self.recording_start_beat,4/params:get("midimidi_subdivision"))
+  beat=Middy.round_to_nearest(clock.get_beats()-self.recording_start_beat,4/params:get("midimidi_subdivision"))
   if beat>params:get("midimidi_measures")*params:get("midimidi_beats_per_measure") then
     return self:recording_stop()
   elseif beat==params:get("midimidi_measures")*params:get("midimidi_beats_per_measure") then
@@ -220,7 +220,7 @@ function MidiMidi:process_note(d)
   table.insert(self.recorded_notes,{beat=beat,ch=d.ch,vel=d.vel,type=d.type,note=d.note})
 end
 
-function MidiMidi:process(data)
+function Middy:process(data)
   local d=midi.to_msg(data)
   if d.type=="clock" then do return end end
 if d.type=="note_on" or d.type=="note_off" then
@@ -233,15 +233,15 @@ if d.type=="note_on" or d.type=="note_off" then
       return self:playback_stop()
     end
   end
-  print('MidiMidi',d.type,d.cc,d.val)
+  print('Middy',d.type,d.cc,d.val)
   if not self.file_loaded then
     do return end
   end
-  current_time=MidiMidi.current_time()
+  current_time=Middy.current_time()
   for i,e in pairs(self.events) do
     -- check if the midi is equal to the cc value
     if e.cc==d.cc then
-      print("MidiMidi",e.comment)
+      print("Middy",e.comment)
       -- buttons only toggle when hitting 127
       if e.button~=nil and d.val~=127 then
         return
@@ -280,7 +280,7 @@ if d.type=="note_on" or d.type=="note_off" then
           send_val=o.data
         end
         if send_val~=nil and send_val~=self.events[i].state[j].last_val then
-          print("MidiMidi",e.comment,o.msg,send_val)
+          print("Middy",e.comment,o.msg,send_val)
           osc.send({"localhost",10111},o.msg,{send_val})
           self.events[i].last_msg_time=current_time
           self.events[i].state[j].last_val=send_val
@@ -292,19 +292,19 @@ if d.type=="note_on" or d.type=="note_off" then
 
 end
 
-MidiMidi.current_time=function()
+Middy.current_time=function()
   return clock.get_beats()*clock.get_beat_sec()
 end
 
-MidiMidi.deepcopy=function(orig)
+Middy.deepcopy=function(orig)
   local orig_type=type(orig)
   local copy
   if orig_type=='table' then
     copy={}
     for orig_key,orig_value in next,orig,nil do
-      copy[MidiMidi.deepcopy(orig_key)]=MidiMidi.deepcopy(orig_value)
+      copy[Middy.deepcopy(orig_key)]=Middy.deepcopy(orig_value)
     end
-    setmetatable(copy,MidiMidi.deepcopy(getmetatable(orig)))
+    setmetatable(copy,Middy.deepcopy(getmetatable(orig)))
   else -- number, string, boolean, etc
     copy=orig
   end
@@ -312,16 +312,16 @@ MidiMidi.deepcopy=function(orig)
 end
 
 -- http://phrogz.net/round-to-nearest-via-modulus-division
-MidiMidi.round_to_nearest=function(i,n)
+Middy.round_to_nearest=function(i,n)
   local m=n/2
   return i+m-(i+m)%n
 end
 
-MidiMidi.table_empty=function(t)
+Middy.table_empty=function(t)
   for _,_ in pairs(t) do
     return false
   end
   return true
 end
 
-return MidiMidi
+return Middy

@@ -1,9 +1,9 @@
--- midimidi
+-- middy demo
 -- 
 --
--- llllllll.co/t/midimidi
+-- llllllll.co/t/middy
 
-mi=include("midimidi/lib/midimidi")
+mi=include("middy/lib/middy")
 
 function init()
   mi:init({log_level="debug",device=1})
