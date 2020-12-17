@@ -80,7 +80,7 @@ function MidiMidi:init_midi()
 end
 
 function MidiMidi:add_menu()
-  params:add_group("MIDIMIDI",6)
+  params:add_group("MIDIMIDI",11)
   params:add_text('midimidi_messsage',">","need to initialize.")
   params:add{type='binary',name='initialize midi',id='midimidi_init',behavior='trigger',action=function(v)
     self:init_midi()
@@ -101,11 +101,11 @@ function MidiMidi:add_menu()
   end}
   params:add_control("midimidi_recordnum","recording number",controlspec.new(0,1000,'lin',1,1,'',1/1000))
   params:add_option("midimidi_loopplayback","loop playback",{"no","yes"},1)
-  params:add_option("midimidi_measures","measures",controlspec.new(1,16,'lin',1,1,'',1/16))
-  params:add_option("midimidi_beats_per_measure","beats per measure",controlspec.new(1,16,'lin',1,4,'',1/16))
-  params:add_option("midimidi_subdivision","subdivision",controlspec.new(1,32,'lin',1,4,'',1/32))
-  params:add_option("midimidi_playwithstart","op-1 start/stop",{"no","yes"},1)
-  params:add_option("midimidi_device","midi device",controlspec.new(1,4,'lin',1,1,'',1/4))
+  params:add_control("midimidi_measures","measures",controlspec.new(1,16,'lin',1,2,'',1/16))
+  params:add_control("midimidi_beats_per_measure","beats per measure",controlspec.new(1,16,'lin',1,4,'',1/16))
+  params:add_control("midimidi_subdivision","subdivision",controlspec.new(1,32,'lin',1,16,'',1/32))
+  params:add_option("midimidi_playwithstart","start recording on note",{"no","yes"},2)
+  params:add_control("midimidi_device","midi device",controlspec.new(1,4,'lin',1,1,'',1/4))
 end
 
 function MidiMidi:playback_stop()
@@ -230,6 +230,7 @@ function MidiMidi:process(data)
   if d.type=="note_on" or d.type=="note_off" then
     return self:process_note(d)
   end
+  -- TODO add option for this
   if d.type=="continue" then 
       return self:playback_start()
   end
