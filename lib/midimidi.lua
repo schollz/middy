@@ -81,6 +81,7 @@ function MidiMidi:init_midi()
   m.event=function(data)
     self:process(data)
   end
+  params:set("midimidi_messsage","initialized.")
 end
 
 function MidiMidi:add_menu()
@@ -90,6 +91,7 @@ function MidiMidi:add_menu()
     self:init_midi()
   end}
   params:add_control("midimidi_recordnum","recording number",controlspec.new(0,1000,'lin',1,1,'',1/1000))
+  params:add_option("midimidi_loopplayback","loop playback",{"no","yes"},1)
   params:add{type='binary',name='toggle recording',id='midimidi_record',behavior='trigger',action=function(v)
     if self.is_recording then
       self:recording_stop()
@@ -97,7 +99,6 @@ function MidiMidi:add_menu()
       self:recording_start()      
     end
   end}
-  params:add_option("midimidi_loopplayback","loop playback",{"no","yes"},1)
   params:add{type='binary',name='toggle playback',id='midimidi_record',behavior='trigger',action=function(v)
     if not self.is_playing then
       self:playback_start()
@@ -136,7 +137,8 @@ function MidiMidi:playback_start()
     end
     table.insert(beats[d.beat],d)
   end
-  beat_current = -4/save_data.subdivisions
+  beat_current = 0
+  clock.internal.start()
   self.clock_stop = clock.run(function()
     self.is_playing=true
     while beat_current < save_data.measures*save_data.beats_per_measure do
@@ -213,12 +215,14 @@ function MidiMidi:process_note(d)
   beat=MidiMidi.round_to_nearest(clock.get_beats()-self.recording_start_beat,4/self.subdivisions)
   if beat>self.measures*self.beats_per_measure then
     return self:recording_stop()
+  elseif beat==self.measures*self.beats_per_measure then 
+    beat = 0
+    table.insert(self.recording,{beat=beat,ch=d.ch,vel=d.vel,type=d.type,note=d.note})
+    return self:recording_stop()
   end
-  
   -- add note to recording
   print("adding note "..json.encode(d))
   table.insert(self.recording,{beat=beat,ch=d.ch,vel=d.vel,type=d.type,note=d.note})
-  
 end
 
 function MidiMidi:process(data)
@@ -226,6 +230,12 @@ function MidiMidi:process(data)
   if d.type=="clock" then do return end end
   if d.type=="note_on" or d.type=="note_off" then
     return self:process_note(d)
+  end
+  if d.type=="continue" then 
+      return self:playback_start()
+  end
+  if d.type=="stop" then 
+    return self:playback_stop()
   end
   print('MidiMidi',d.type,d.cc,d.val)
   if not self.file_loaded then
