@@ -78,7 +78,7 @@ function MidiMidi:init_map(filename)
     self.file_loaded=true
 end
 
-function MidiMidi:add_menu()
+function MidiMidi:init_menu()
   params:add_group("MIDIMIDI",11)
   params:add_text('midimidi_messsage',">","need to initialize.")
   params:add{type='binary',name='initialize midi',id='midimidi_init',behavior='trigger',action=function(v)
