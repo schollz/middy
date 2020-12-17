@@ -20,17 +20,32 @@ local m = nil
 
 function MidiMidi:init(o)
   o=o or {}
-  
-  if o.filename~=nil and util.file_exists(o.filename) then
+  setmetatable(o,self)
+  self.__index=self
+  return o
+end
+
+function MidiMidi:init_midi()
+  -- intiailize midi
+  print("midimidi listening to device "..params:get("midimidi_device"))
+  m=midi.connect()
+  m.event=function(data)
+    self:process(data)
+  end
+  params:set("midimidi_messsage","initialized.")
+end
+
+function MidiMidi:init_map(filename)
     -- load file
-    local f=assert(io.open(o.filename,"rb"))
+    self.filename=filename
+    local f=assert(io.open(self.filename,"rb"))
     local content=f:read("*all")
     f:close()
-    o.events=json.decode(content)
+    self.events=json.decode(content)
     
     -- explode the settings (in cases of multiple)
     events={}
-    for i,e in pairs(o.events) do
+    for i,e in pairs(self.events) do
       event=e
       if e.count==nil then
         table.insert(events,e)
@@ -59,24 +74,8 @@ function MidiMidi:init(o)
       end
       events[i].last_msg_time=MidiMidi.current_time()
     end
-    o.events=events
-    o.file_loaded=true
-  end
-  
-
-  setmetatable(o,self)
-  self.__index=self
-  return o
-end
-
-function MidiMidi:init_midi()
-  -- intiailize midi
-  print("midimidi listening to device "..params:get("midimidi_device"))
-  m=midi.connect()
-  m.event=function(data)
-    self:process(data)
-  end
-  params:set("midimidi_messsage","initialized.")
+    self.events=events
+    self.file_loaded=true
 end
 
 function MidiMidi:add_menu()
