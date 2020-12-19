@@ -55,17 +55,17 @@
     }]
 },
 {
-    "comment": "filter X",
+    "comment": "pan X",
     "cc": 16,
     "add": 1,
     "count": 6,
     "commands": [
     {
         "bounds": [
-            0,
-            20000
+            -1,
+            1
         ],
-        "msg": "/param/Xfilter_frequency"
+        "msg": "/param/Xpan"
     }]
 },
 {
@@ -94,7 +94,7 @@
     "count": 6,
     "commands": [
     {
-        "msg": "/param/Xrecording trig",
+        "msg": "/param/Xarming trig",
         "datas": [
             0,
             1
