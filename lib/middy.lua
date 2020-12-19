@@ -1,6 +1,6 @@
 -- A small library to do extend midi mapping functionality
 
-local json=include("midimidi/lib/json")
+local json=include("middy/lib/json")
 
 Middy={
   file_loaded=false,
@@ -10,6 +10,7 @@ Middy={
   is_playing=false,
   clock_stop=0,
   notes_on={},
+  has_menu=false,
 }
 
 local m=nil
@@ -23,12 +24,13 @@ end
 
 function Middy:init_midi()
   -- intiailize midi
-  print("midimidi listening to device "..params:get("midimidi_device"))
   m=midi.connect()
   m.event=function(data)
     self:process(data)
   end
-  params:set("midimidi_messsage","initialized.")
+  if self.has_menu then 
+    params:set("middy_messsage","initialized.")
+  end
 end
 
 function Middy:init_map(filename)
@@ -75,38 +77,39 @@ function Middy:init_map(filename)
 end
 
 function Middy:init_menu()
-  params:add_group("MIDIMIDI",11)
-  params:add_text('midimidi_messsage',">","need to initialize.")
-  params:add{type='binary',name='initialize midi',id='midimidi_init',behavior='trigger',action=function(v)
+  self.has_menu=true
+  params:add_group("middy",11)
+  params:add_text('middy_messsage',">","need to initialize.")
+  params:add{type='binary',name='initialize midi',id='middy_init',behavior='trigger',action=function(v)
     self:init_midi()
   end}
-  params:add{type='binary',name='toggle recording',id='midimidi_record',behavior='trigger',action=function(v)
+  params:add{type='binary',name='toggle recording',id='middy_record',behavior='trigger',action=function(v)
     if self.is_recording then
       self:recording_stop()
     else
       self:recording_start()
     end
   end}
-  params:add{type='binary',name='toggle playback',id='midimidi_record',behavior='trigger',action=function(v)
+  params:add{type='binary',name='toggle playback',id='middy_record',behavior='trigger',action=function(v)
     if not self.is_playing then
       self:playback_start()
     else
       self:playback_stop()
     end
   end}
-  params:add_control("midimidi_recordnum","recording number",controlspec.new(0,1000,'lin',1,1,'',1/1000))
-  params:add_option("midimidi_loopplayback","loop playback",{"no","yes"},1)
-  params:add_control("midimidi_measures","measures",controlspec.new(1,16,'lin',1,2,'',1/16))
-  params:add_control("midimidi_beats_per_measure","beats per measure",controlspec.new(1,16,'lin',1,4,'',1/16))
-  params:add_control("midimidi_subdivision","subdivision",controlspec.new(1,32,'lin',1,16,'',1/32))
-  params:add_option("midimidi_playwithstart","start recording on note",{"no","yes"},2)
-  params:add_control("midimidi_device","midi device",controlspec.new(1,4,'lin',1,1,'',1/4))
-  params:add_option("midimidi_op1","op1 start/stop",{"no","yes"},2)
+  params:add_control("middy_recordnum","recording number",controlspec.new(0,1000,'lin',1,1,'',1/1000))
+  params:add_option("middy_loopplayback","loop playback",{"no","yes"},1)
+  params:add_control("middy_measures","measures",controlspec.new(1,16,'lin',1,2,'',1/16))
+  params:add_control("middy_beats_per_measure","beats per measure",controlspec.new(1,16,'lin',1,4,'',1/16))
+  params:add_control("middy_subdivision","subdivision",controlspec.new(1,32,'lin',1,16,'',1/32))
+  params:add_option("middy_playwithstart","start recording on note",{"no","yes"},2)
+  params:add_control("middy_device","midi device",controlspec.new(1,4,'lin',1,1,'',1/4))
+  params:add_option("middy_op1","op1 start/stop",{"no","yes"},2)
 end
 
 function Middy:playback_stop()
   self.is_playing=false
-  params:set("midimidi_messsage","stopped playback.")
+  params:set("middy_messsage","stopped playback.")
   clock.cancel(self.clock_stop)
   for note,_ in pairs(self.notes_on) do
     m:note_off(note)
@@ -114,12 +117,12 @@ function Middy:playback_stop()
 end
 
 function Middy:playback_start()
-  params:set("midimidi_messsage","started playback.")
-  local fname=_path.data.."midimidi/"..params:get("midimidi_recordnum")..".json"
+  params:set("middy_messsage","started playback.")
+  local fname=_path.data.."middy/"..params:get("middy_recordnum")..".json"
   print(fname)
   local f=io.open(fname,"rb")
   if f==nil then
-    params:set("midimidi_messsage","no file.")
+    if self.has_menu then  params:set("middy_messsage","no file.") end
     do return end
   end
   local save_data_json=f:read("*all")
@@ -155,7 +158,7 @@ function Middy:playback_start()
       end
       clock.sync(4/save_data.subdivisions)
       beat_current=beat_current+4/save_data.subdivisions
-      if beat_current>=save_data.measures*save_data.beats_per_measure and params:get("midimidi_loopplayback")==2 then
+      if beat_current>=save_data.measures*save_data.beats_per_measure and params:get("middy_loopplayback")==2 then
         -- reset
         beat_current=0
       end
@@ -166,22 +169,22 @@ end
 
 function Middy:recording_start()
   print("recording_start")
-  params:set("midimidi_messsage","started recording.")
+  params:set("middy_messsage","started recording.")
   self.recorded_notes={}
   self.recording_start_beat=clock.get_beats()
   self.is_recording=true
   self.clock_stop=clock.run(function()
-    clock.sleep(clock.get_beat_sec()*params:get("midimidi_measures")*params:get("midimidi_beats_per_measure"))
+    clock.sleep(clock.get_beat_sec()*params:get("middy_measures")*params:get("middy_beats_per_measure"))
     self:recording_stop()
   end)
 end
 
 function Middy:recording_stop()
   print("recording_stop")
-  params:set("midimidi_messsage","stopped recording.")
-  local fname=_path.data.."midimidi/"..params:get("midimidi_recordnum")..".json"
+  params:set("middy_messsage","stopped recording.")
+  local fname=_path.data.."middy/"..params:get("middy_recordnum")..".json"
   file=io.open(fname,"w+")
-  file:write(json.encode({notes=self.recording,subdivisions=params:get("midimidi_subdivision"),measures=params:get("midimidi_measures"),beats_per_measure=params:get("midimidi_beats_per_measure")}))
+  file:write(json.encode({notes=self.recording,subdivisions=params:get("middy_subdivision"),measures=params:get("middy_measures"),beats_per_measure=params:get("middy_beats_per_measure")}))
   file:close()
   self.is_recording=false
   clock.cancel(self.clock_stop)
@@ -196,21 +199,21 @@ function Middy:process_note(d)
   end
 
   -- reset timer on first beat if initializing to first beat
-  if Middy.table_empty(self.recorded_notes) and params:get("midimidi_playwithstart")==2 then
+  if Middy.table_empty(self.recorded_notes) and params:get("middy_playwithstart")==2 then
     self.recording_start_beat=clock.get_beats()
     -- restart stop clock
     clock.cancel(self.clock_stop)
     self.clock_stop=clock.run(function()
-      clock.sleep(clock.get_beat_sec()*params:get("midimidi_measures")*params:get("midimidi_beats_per_measure"))
+      clock.sleep(clock.get_beat_sec()*params:get("middy_measures")*params:get("middy_beats_per_measure"))
       self:recording_stop()
     end)
   end
 
   -- determine current beat
-  beat=Middy.round_to_nearest(clock.get_beats()-self.recording_start_beat,4/params:get("midimidi_subdivision"))
-  if beat>params:get("midimidi_measures")*params:get("midimidi_beats_per_measure") then
+  beat=Middy.round_to_nearest(clock.get_beats()-self.recording_start_beat,4/params:get("middy_subdivision"))
+  if beat>params:get("middy_measures")*params:get("middy_beats_per_measure") then
     return self:recording_stop()
-  elseif beat==params:get("midimidi_measures")*params:get("midimidi_beats_per_measure") then
+  elseif beat==params:get("middy_measures")*params:get("middy_beats_per_measure") then
     beat=0
     table.insert(self.recorded_notes,{beat=beat,ch=d.ch,vel=d.vel,type=d.type,note=d.note})
     return self:recording_stop()
@@ -226,7 +229,7 @@ function Middy:process(data)
 if d.type=="note_on" or d.type=="note_off" then
     return self:process_note(d)
   end
-  if not self.is_recording and params:get("midimidi_op1")==2 then
+  if not self.is_recording and self.has_menu and params:get("middy_op1")==2 then
     if d.type=="continue" then
       return self:playback_start()
     elseif d.type=="stop" then
