@@ -78,7 +78,7 @@ end
 
 function Middy:init_menu()
   self.has_menu=true
-  params:add_group("middy",12)
+  params:add_group("MIDDY",12)
   params:add_text('middy_messsage',">","need to initialize.")
   params:add{type='binary',name='initialize midi',id='middy_init',behavior='trigger',action=function(v)
     self:init_midi()
