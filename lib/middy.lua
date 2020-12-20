@@ -21,18 +21,59 @@ function Middy:init(o)
   o=o or {}
   setmetatable(o,self)
   self.__index=self
+
+  if o.filename ~= nil then 
+    self:init_map(o.filename)
+  end
+
+  if not util.file_exists(self.path_config) then util.make_dir(self.path_config) end
+  if not util.file_exists(self.path_midi) then util.make_dir(self.path_midi) end
+
+  params:add_group("MIDDY",13)
+  params:add_separator("midi mapping")
+  params:set_action("middy_load_mapping",function(x)
+    if x == self.path_config then 
+      do return end
+    end
+    self:init_map(x)
+  end)
+  params:add_separator("midi looping")
+  params:add_text('middy_messsage',">","need to initialize.")
+  params:add_file("middy_load_mapping","load midi mapping",self.path_config)
+  params:add{type='binary',name='initialize midi',id='middy_init',behavior='trigger',action=function(v)
+    self:init_midi()
+  end}
+  params:add{type='binary',name='toggle recording',id='middy_record',behavior='trigger',action=function(v)
+    if self.is_recording then
+      self:recording_stop()
+    else
+      self:recording_start()
+    end
+  end}
+  params:add{type='binary',name='toggle playback',id='middy_record',behavior='trigger',action=function(v)
+    if not self.is_playing then
+      self:playback_start()
+    else
+      self:playback_stop()
+    end
+  end}
+  params:add_control("middy_recordnum","recording number",controlspec.new(0,1000,'lin',1,1,'',1/1000))
+  params:add_option("middy_loopplayback","loop playback",{"no","yes"},1)
+  params:add_control("middy_measures","measures",controlspec.new(1,16,'lin',1,2,'',1/16))
+  params:add_control("middy_beats_per_measure","beats per measure",controlspec.new(1,16,'lin',1,4,'',1/16))
+  params:add_control("middy_subdivision","subdivision",controlspec.new(1,32,'lin',1,16,'',1/32))
+  params:add_option("middy_playwithstart","start recording on note",{"no","yes"},2)
+  params:add_control("middy_device","midi device",controlspec.new(1,4,'lin',1,1,'',1/4))
+  params:add_option("middy_op1","op1 start/stop",{"no","yes"},1)
   return o
 end
 
 function Middy:init_midi()
-  -- intiailize midi
-  m=midi.connect()
+  m=midi.connect(params:get("middy_device"))
   m.event=function(data)
     self:process(data)
   end
-  if self.has_menu then 
-    params:set("middy_messsage","initialized.")
-  end
+  params:set("middy_messsage","initialized.")
 end
 
 function Middy:init_map(filename)
@@ -78,40 +119,6 @@ function Middy:init_map(filename)
   self.file_loaded=true
 end
 
-function Middy:init_menu()
-  self.has_menu=true
-  if not util.file_exists(self.path_config) then util.make_dir(self.path_config) end
-  if not util.file_exists(self.path_midi) then util.make_dir(self.path_midi) end
-
-  params:add_group("MIDDY",12)
-  params:add_file("middy_load config","load midi mapping",self.path_config)
-  params:add_text('middy_messsage',">","need to initialize.")
-  params:add{type='binary',name='initialize midi',id='middy_init',behavior='trigger',action=function(v)
-    self:init_midi()
-  end}
-  params:add{type='binary',name='toggle recording',id='middy_record',behavior='trigger',action=function(v)
-    if self.is_recording then
-      self:recording_stop()
-    else
-      self:recording_start()
-    end
-  end}
-  params:add{type='binary',name='toggle playback',id='middy_record',behavior='trigger',action=function(v)
-    if not self.is_playing then
-      self:playback_start()
-    else
-      self:playback_stop()
-    end
-  end}
-  params:add_control("middy_recordnum","recording number",controlspec.new(0,1000,'lin',1,1,'',1/1000))
-  params:add_option("middy_loopplayback","loop playback",{"no","yes"},1)
-  params:add_control("middy_measures","measures",controlspec.new(1,16,'lin',1,2,'',1/16))
-  params:add_control("middy_beats_per_measure","beats per measure",controlspec.new(1,16,'lin',1,4,'',1/16))
-  params:add_control("middy_subdivision","subdivision",controlspec.new(1,32,'lin',1,16,'',1/32))
-  params:add_option("middy_playwithstart","start recording on note",{"no","yes"},2)
-  params:add_control("middy_device","midi device",controlspec.new(1,4,'lin',1,1,'',1/4))
-  params:add_option("middy_op1","op1 start/stop",{"no","yes"},2)
-end
 
 function Middy:playback_stop()
   self.is_playing=false
