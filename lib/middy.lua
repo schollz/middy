@@ -11,6 +11,8 @@ Middy={
   clock_stop=0,
   notes_on={},
   has_menu=false,
+  path_config=_path.data.."middy/maps/"
+  path_midi=_path.data.."middy/midi/"
 }
 
 local m=nil
@@ -78,7 +80,11 @@ end
 
 function Middy:init_menu()
   self.has_menu=true
+  if not util.file_exists(self.path_config) then util.make_dir(self.path_config) end
+  if not util.file_exists(self.path_midi) then util.make_dir(self.path_midi) end
+
   params:add_group("MIDDY",12)
+  params:add_file("middy_load config","load midi mapping",self.path_config)
   params:add_text('middy_messsage',">","need to initialize.")
   params:add{type='binary',name='initialize midi',id='middy_init',behavior='trigger',action=function(v)
     self:init_midi()
