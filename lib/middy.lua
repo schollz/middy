@@ -78,7 +78,7 @@ end
 
 function Middy:init_menu()
   self.has_menu=true
-  params:add_group("middy",11)
+  params:add_group("middy",12)
   params:add_text('middy_messsage',">","need to initialize.")
   params:add{type='binary',name='initialize midi',id='middy_init',behavior='trigger',action=function(v)
     self:init_midi()
@@ -183,16 +183,18 @@ function Middy:recording_stop()
   print("recording_stop")
   params:set("middy_messsage","stopped recording.")
   local fname=_path.data.."middy/"..params:get("middy_recordnum")..".json"
-  file=io.open(fname,"w+")
-  file:write(json.encode({notes=self.recording,subdivisions=params:get("middy_subdivision"),measures=params:get("middy_measures"),beats_per_measure=params:get("middy_beats_per_measure")}))
-  file:close()
+  local ff=io.open(fname,"w+")
+  local data = json.encode({notes=self.recorded_notes,subdivisions=params:get("middy_subdivision"),measures=params:get("middy_measures"),beats_per_measure=params:get("middy_beats_per_measure")})
+  print(data)
+  ff:write(data)
+  ff:close()
   self.is_recording=false
   clock.cancel(self.clock_stop)
 end
 
 function Middy:process_note(d)
   for k,v in pairs(d) do
-    print(k,v)
+    print("process_note",k,v)
   end
   if not self.is_recording then
     do return end
