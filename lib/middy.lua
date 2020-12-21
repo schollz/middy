@@ -26,7 +26,10 @@ function Middy:init(o)
     self:init_map(o.filename)
   end
 
-  if not util.file_exists(self.path_maps) then util.make_dir(self.path_maps) end
+  if not util.file_exists(self.path_maps) then 
+	  util.make_dir(self.path_maps) 
+	  os.execute("cp /home/dust/code/middy/maps/* "..self.path_maps)
+  end
   if not util.file_exists(self.path_midi) then util.make_dir(self.path_midi) end
 
   params:add_group("MIDDY",13)
