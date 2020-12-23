@@ -97,10 +97,11 @@ if you include the `bounds` instead of `datas`, then it will map the 0-127 input
 ]
 ```
 
+in the case above, any midi input will be mapped to the compressor mix at a level between 0.2 and 0.9.
+
 #### mapping: chaining midi commands to single input
 
-the nice thing about *middy* is that you can easily chain MIDI commands. for example, this will extend the previous example to also
-change the compressor value after toggling.
+the nice thing about *middy* is that you can easily chain MIDI commands. for example, this will extend the previous example to toggle the compressor on *and* turn the compressor mix up to 1.
 
 ```json
 [
@@ -116,7 +117,7 @@ change the compressor value after toggling.
 ]
 ```
 
-the `"data"` sends a single data no matter, while the compressor is toggled on or off as before.
+the `"data"` directive tells middy to send a single data no matter, whether the compressor is toggled on or off as before.
 
 ### repetitive things
 
@@ -134,7 +135,7 @@ for repetitive things you can utilize the `X` notation:
 }]
 ```
 
-in that example the `count` is set to 6 so it will repeat 6 times and replace the `X` by the current count (1 through 6 here). on the first time it will start at `cc` of 0, and each time it will then add the `midi_add` to the `cc`.
+in that example the `count` is set to 6 so it will repeat 6 times and replace the `X` by the current count (1 through 6 here). on the first time it will start at `cc` of 0, and each time it will then add the `add` (1) to the `cc`. so this code will affect ccs 0-5 which target parameters 1-6.
 
 ### recording midi
 
