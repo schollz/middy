@@ -1,13 +1,13 @@
 # middy
 
-library to add on chaining-commands and looping for midi.
+library add-on for midi controllers and recording midi.
 
-this script is something i've found very useful to add some extra functionality to midi while within other scripts on norns. i made it specifically for using with *oooooo* and *otis* but it should work with any script by adding two lines into the `init()` function of the script.
+this script is something i've found very useful to add some extra functionality to midi devices while within other scripts on norns. i made it specifically for using with *oooooo* and *otis* but it should work with any script by adding two lines into the `init()` function of the script.
 
 *middy* does two things:
 
-- it will listen to midi and map input to any number of outputs in a multitude of ways (see "mapping" below)
-- it will let you record midi in tempo and play it back as a mini midi loop (see "recording midi" below)
+- it maps midi input to any number of outputs in a multitude of ways (see "mapping" below)
+- it can record midi with quanitzation and play it back as a mini midi loop (see "recording midi" below)
 
 ## Requirements
 
@@ -16,7 +16,7 @@ this script is something i've found very useful to add some extra functionality 
 
 ## Documentation
 
-to get started, add the following to any norns script, preferable in the `init()` function:
+to get started, add the following to any norns script, usually in the `init()` function:
 
 ```lua
 local middy=include("middy/lib/middy")
@@ -29,9 +29,9 @@ this will add a new menu called `MIDDY` which you can access the functionality f
 
 *middy* lets you map any number of midi inputs to any number of internal parameter in a norns script. the real power here is that, unlike `PSET`, here you can map a single midi input to multiple parameters. 
 
-it uses a configuration file written in JSON syntax. when loading the script from the `MIDDY` menu you will have access to the the midi mapping from your device. an example of the syntax is below.
+it uses a config file written in JSON syntax. when loading the config file from the `MIDDY` menu you will have access to the the midi mapping from your device. an example of the syntax is below.
 
-all the configuration files need to be written and saved to the folder at
+all config files need to be written and saved to the folder at
 
 ```bash
 ~/dust/data/middy/maps/
@@ -49,18 +49,18 @@ m1:init_map('/home/we/dust/data/middy/maps/nanokontrol-oooooo.json')
 
 #### mapping: basic button
 
-to set those commands to do something, you need to create a *middy* json file. a simple json file might be like this, which simply toggles the compressor on/off:
+to set those commands to do something, you need to create a *middy* config file file. a simple config file might be like this, which simply toggles the compressor on/off:
 
 ```json
 [
-	{
-	    "comment": "toggle compressor",
-	    "button": true,
-	    "cc": 58,
-	    "commands": [ 
-	    	{ "datas": [1, 2], "msg": "/param/compressor"} 
-	    ]
-	}
+  {
+      "comment": "toggle compressor",
+      "button": true,
+      "cc": 58,
+      "commands": [ 
+        { "datas": [1, 2], "msg": "/param/compressor"} 
+      ]
+  }
 ]
 ```
 
@@ -72,14 +72,14 @@ if you leave off the `button` directive, the commands will act as a slider. by u
 
 ```json
 [
-	{
-	    "comment": "discrete compressor mix",
-	    "button":true,
-	    "cc": 58,
-	    "commands": [ 
-	    	{ "datas": [0,0.5,1], "msg": "/param/comp_mix"} 
-	    ]
-	}
+  {
+      "comment": "discrete compressor mix",
+      "button":true,
+      "cc": 58,
+      "commands": [ 
+        { "datas": [0,0.5,1], "msg": "/param/comp_mix"} 
+      ]
+  }
 ]
 ```
 
@@ -87,13 +87,13 @@ if you include the `bounds` instead of `datas`, then it will map the 0-127 input
 
 ```json
 [
-	{
-	    "comment": "continuous compressor mix slider",
-	    "cc": 0,
-	    "commands": [ 
-	    	{ "bounds": [0.2,0.9], "msg": "/param/comp_mix"} 
-	    ]
-	}
+  {
+      "comment": "continuous compressor mix slider",
+      "cc": 0,
+      "commands": [ 
+        { "bounds": [0.2,0.9], "msg": "/param/comp_mix"} 
+      ]
+  }
 ]
 ```
 
@@ -104,15 +104,15 @@ change the compressor value after toggling.
 
 ```json
 [
-	{
-	    "comment": "toggle compressor",
-	    "button": true,
-	    "cc": 58,
-	    "commands": [ 
-	    	{ "datas": [1, 2], "msg": "/param/compressor"},
-	    	{ "data": 1, "msg": "/param/comp_mix"}
-	    ]
-	}
+  {
+      "comment": "toggle compressor",
+      "button": true,
+      "cc": 58,
+      "commands": [ 
+        { "datas": [1, 2], "msg": "/param/compressor"},
+        { "data": 1, "msg": "/param/comp_mix"}
+      ]
+  }
 ]
 ```
 
@@ -129,7 +129,7 @@ for repetitive things you can utilize the `X` notation:
     "add": 1,
     "count": 6,
     "commands": [
-    	{ "bounds": [0,1], "msg": "/param/Xvol" }
+      { "bounds": [0,1], "msg": "/param/Xvol" }
     ]
 }]
 ```
