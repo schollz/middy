@@ -55,6 +55,53 @@
     }]
 },
 {
+    "comment": "volume all",
+    "cc": 6,
+    "commands": [
+    {
+        "bounds": [
+            0,
+            1
+        ],
+        "msg": "/param/1vol"
+    },
+    {
+        "bounds": [
+            0,
+            1
+        ],
+        "msg": "/param/2vol"
+    },
+    {
+        "bounds": [
+            0,
+            1
+        ],
+        "msg": "/param/3vol"
+    },
+    {
+        "bounds": [
+            0,
+            1
+        ],
+        "msg": "/param/4vol"
+    },
+    {
+        "bounds": [
+            0,
+            1
+        ],
+        "msg": "/param/5vol"
+    },
+    {
+        "bounds": [
+            0,
+            1
+        ],
+        "msg": "/param/6vol"
+    }]
+},
+{
     "comment": "pan X",
     "cc": 16,
     "add": 1,
