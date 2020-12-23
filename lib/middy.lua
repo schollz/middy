@@ -3,6 +3,7 @@
 local json=include("middy/lib/json")
 
 Middy={
+  is_initialized=false,
   file_loaded=false,
   is_recording=false,
   recording_start_beat=0,
@@ -11,8 +12,8 @@ Middy={
   clock_stop=0,
   notes_on={},
   has_menu=false,
-  path_maps=_path.data.."middy/maps/"
-  path_midi=_path.data.."middy/midi/"
+  path_maps=_path.data.."middy/maps/",
+  path_midi=_path.data.."middy/midi/",
 }
 
 local m=nil
@@ -28,24 +29,25 @@ function Middy:init(o)
 
   if not util.file_exists(self.path_maps) then 
 	  util.make_dir(self.path_maps) 
-	  os.execute("cp /home/dust/code/middy/maps/* "..self.path_maps)
+	  os.execute("cp /home/we/dust/code/middy/maps/* "..self.path_maps)
   end
   if not util.file_exists(self.path_midi) then util.make_dir(self.path_midi) end
 
   params:add_group("MIDDY",13)
-  params:add_separator("midi mapping")
-  params:add_file("middy_load_mapping","load midi mapping",self.path_maps)
-  params:set_action("middy_load_mapping",function(x)
-    if x == self.path_maps then 
-      do return end
-    end
-    self:init_map(x)
-  end)
-  params:add_separator("midi looping")
   params:add_text('middy_messsage',">","need to initialize.")
   params:add{type='binary',name='initialize midi',id='middy_init',behavior='trigger',action=function(v)
     self:init_midi()
   end}
+  params:add_file("middy_load_mapping","load midi mapping",self.path_maps)
+  params:set_action("middy_load_mapping",function(x)
+    print(x)
+    if x == self.path_maps or not self.is_initialized then 
+      do return end
+    end
+    self:init_map(x)
+    params:set("middy_messsage","loaded map.")
+    print("loaded map.")
+  end)
   params:add{type='binary',name='toggle recording',id='middy_record',behavior='trigger',action=function(v)
     if self.is_recording then
       self:recording_stop()
@@ -60,23 +62,32 @@ function Middy:init(o)
       self:playback_stop()
     end
   end}
+  params:add_control("middy_device","midi device",controlspec.new(1,4,'lin',1,1,'',1/4))
   params:add_control("middy_recordnum","recording number",controlspec.new(0,1000,'lin',1,1,'',1/1000))
   params:add_option("middy_loopplayback","loop playback",{"no","yes"},1)
   params:add_control("middy_measures","measures",controlspec.new(1,16,'lin',1,2,'',1/16))
   params:add_control("middy_beats_per_measure","beats per measure",controlspec.new(1,16,'lin',1,4,'',1/16))
   params:add_control("middy_subdivision","subdivision",controlspec.new(1,32,'lin',1,16,'',1/32))
   params:add_option("middy_playwithstart","start recording on note",{"no","yes"},2)
-  params:add_control("middy_device","midi device",controlspec.new(1,4,'lin',1,1,'',1/4))
   params:add_option("middy_op1","op1 start/stop",{"no","yes"},1)
+  clock.run(function()
+    clock.sleep(1)
+    params:set("middy_messsage","")
+  end)
   return o
 end
 
 function Middy:init_midi()
+  self.is_initialized=true
   m=midi.connect(params:get("middy_device"))
   m.event=function(data)
     self:process(data)
   end
   params:set("middy_messsage","initialized.")
+  if params:get("middy_load_mapping") ~= self.path_maps then 
+    self:init_map(params:get("middy_load_mapping"))
+    params:set("middy_messsage","loaded map.")
+  end
 end
 
 function Middy:init_map(filename)
