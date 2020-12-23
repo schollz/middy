@@ -1,13 +1,14 @@
 # middy
 
-library add-on for midi controllers and recording midi.
+script add-on to add-on extra functionality w/ midi controllers + recording midi.
 
-this script is something i've found very useful to add some extra functionality to midi devices while within other scripts on norns. i made it specifically for using with *oooooo* and *otis* but it should work with any script by adding two lines into the `init()` function of the script.
+this script is something i've found very useful to add some extra functionality to midi devices while within other scripts on norns. i made it specifically for using with [*oooooo*](https://llllllll.co/t/oooooo/35828) and [otis](https://llllllll.co/t/otis/22149) but it should work with any script by adding two lines into the `init()` function of the script. 
 
-*middy* does two things:
+*middy* is similar to `MAP` on norns  `MAP` does 95% of what *middy* does. so what does *midi* do? *middy* does two things:
 
-- it maps midi input to any number of outputs in a multitude of ways (see "mapping" below)
-- it can record midi with quanitzation and play it back as a mini midi loop (see "recording midi" below)
+- it can map a single midi input to many outputs in a multitude of ways (see "mapping" below). this is very useful if you want to map a single key to toggle multiple effects, or use a single slider to modulate several different volumes for instance. unlike `MAP`, you can also map to arrays of discrete values.
+- it can record midi with quanitzation and play it back as a mini midi loop (see "recording midi" below). this is useful for getting ideas recorded into norns quickly (in case you don't have a daw) and also i find it useful for composition and using midi in a non-midi script.
+
 
 ## Requirements
 
@@ -23,7 +24,7 @@ local middy=include("middy/lib/middy")
 middy:init()
 ```
 
-this will add a new menu called `MIDDY` which you can access the functionality from. there are two main functions described below.
+(see oooooo code for another example). this will add a new menu called `MIDDY` which you can access the functionality. there are two main functions described below.
 
 ### mapping
 
