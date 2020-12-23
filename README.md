@@ -2,12 +2,12 @@
 
 library to add on chaining-commands and looping for midi.
 
-this script is something i've found very useful to add some extra functionality to midi while within other scripts on norns. i made it specifically for using with *oooooo* and *otis* but it should work with any script.
+this script is something i've found very useful to add some extra functionality to midi while within other scripts on norns. i made it specifically for using with *oooooo* and *otis* but it should work with any script by adding two lines into the `init()` function of the script.
 
 *middy* does two things:
 
 - it will listen to midi and map input to any number of outputs in a multitude of ways (see "mapping" below)
-- it will let you record midi in tempo and play it back as a mini midi loop (see "looping" below)
+- it will let you record midi in tempo and play it back as a mini midi loop (see "recording midi" below)
 
 ## Requirements
 
@@ -19,8 +19,8 @@ this script is something i've found very useful to add some extra functionality 
 to get started, add the following to any norns script, preferable in the `init()` function:
 
 ```lua
-local Middy=include("middy/lib/middy")
-Middy:init()
+local middy=include("middy/lib/middy")
+middy:init()
 ```
 
 this will add a new menu called `MIDDY` which you can access the functionality from. there are two main functions described below.
@@ -40,7 +40,10 @@ all the configuration files need to be written and saved to the folder at
 or alternatively you can start midi with the filename
 
 ```lua
-Middy:init({filename="/home/we/dust/mymap.json"})
+local middy=include("middy/lib/middy")
+local m1 = middy:init()
+m1:init_midi()
+m1:init_map('/home/we/dust/data/middy/maps/nanokontrol-oooooo.json')
 ```
 
 
@@ -133,11 +136,11 @@ for repetitive things you can utilize the `X` notation:
 
 in that example the `count` is set to 6 so it will repeat 6 times and replace the `X` by the current count (1 through 6 here). on the first time it will start at `cc` of 0, and each time it will then add the `midi_add` to the `cc`.
 
-### looping
+### recording midi
 
 *middy* is also equipped with a single basic midi looper. it basically lets you play a midi loop directly from any script in norns. to use it follow these steps:
 
-1. go to the `MIDDY` params and first `initialize midi`.
+1. go to the `MIDDY` params and first select `midi device`, then hit `initialize midi`.
 2. select a `recording number` (each recording is designated by a number).
 3. set the `measures` for how long you want the loop to be
 4. start recording by pressing `toggle recording`. play something on your midi device.  

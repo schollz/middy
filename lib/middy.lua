@@ -34,6 +34,7 @@ function Middy:init(o)
   if not util.file_exists(self.path_midi) then util.make_dir(self.path_midi) end
 
   params:add_group("MIDDY",13)
+  params:add_control("middy_device","midi device",controlspec.new(1,4,'lin',1,1,'',1/4))
   params:add_text('middy_messsage',">","need to initialize.")
   params:add{type='binary',name='initialize midi',id='middy_init',behavior='trigger',action=function(v)
     self:init_midi()
@@ -62,7 +63,6 @@ function Middy:init(o)
       self:playback_stop()
     end
   end}
-  params:add_control("middy_device","midi device",controlspec.new(1,4,'lin',1,1,'',1/4))
   params:add_control("middy_recordnum","recording number",controlspec.new(0,1000,'lin',1,1,'',1/1000))
   params:add_option("middy_loopplayback","loop playback",{"no","yes"},1)
   params:add_control("middy_measures","measures",controlspec.new(1,16,'lin',1,2,'',1/16))
@@ -73,12 +73,14 @@ function Middy:init(o)
   clock.run(function()
     clock.sleep(1)
     params:set("middy_messsage","")
+    params:set("middy_load_mapping",self.path_maps)
   end)
   return o
 end
 
 function Middy:init_midi()
   self.is_initialized=true
+  print("connecting to midi device "..params:get("middy_device"))
   m=midi.connect(params:get("middy_device"))
   m.event=function(data)
     self:process(data)
@@ -145,7 +147,7 @@ end
 
 function Middy:playback_start()
   params:set("middy_messsage","started playback.")
-  local fname=_path.data.."middy/"..params:get("middy_recordnum")..".json"
+  local fname=_path.data.."middy/midi/"..params:get("middy_recordnum")..".json"
   print(fname)
   local f=io.open(fname,"rb")
   if f==nil then
@@ -209,7 +211,7 @@ end
 function Middy:recording_stop()
   print("recording_stop")
   params:set("middy_messsage","stopped recording.")
-  local fname=_path.data.."middy/"..params:get("middy_recordnum")..".json"
+  local fname=_path.data.."middy/midi/"..params:get("middy_recordnum")..".json"
   local ff=io.open(fname,"w+")
   local data = json.encode({notes=self.recorded_notes,subdivisions=params:get("middy_subdivision"),measures=params:get("middy_measures"),beats_per_measure=params:get("middy_beats_per_measure")})
   print(data)
