@@ -33,9 +33,14 @@ function Middy:init(o)
   end
   if not util.file_exists(self.path_midi) then util.make_dir(self.path_midi) end
 
+  local midi_devices = {}
+  for _, dev in ipairs(midi.devices) do
+    tab.print(dev)
+    table.insert(midi_devices,dev.name)
+  end
   params:add_group("MIDDY",13)
-  params:add_control("middy_device","midi device",controlspec.new(1,4,'lin',1,1,'',1/4))
   params:add_text('middy_messsage',">","need to initialize.")
+  params:add_option("middy_device","midi device",midi_devices)
   params:add{type='binary',name='initialize midi',id='middy_init',behavior='trigger',action=function(v)
     self:init_midi()
   end}
@@ -256,6 +261,9 @@ end
 
 function Middy:process(data)
   local d=midi.to_msg(data)
+  for k,v in pairs(d) do 
+	  print(k,v)
+  end
   if d.type=="clock" then do return end end
 if d.type=="note_on" or d.type=="note_off" then
     return self:process_note(d)
@@ -314,7 +322,7 @@ if d.type=="note_on" or d.type=="note_off" then
           send_val=o.data
         end
         if send_val~=nil and send_val~=self.events[i].state[j].last_val then
-          print("Middy",e.comment,o.msg,send_val)
+          print("Middy: ",e.comment,o.msg,send_val)
           osc.send({"localhost",10111},o.msg,{send_val})
           self.events[i].last_msg_time=current_time
           self.events[i].state[j].last_val=send_val
