@@ -33,14 +33,14 @@ function Middy:init(o)
   end
   if not util.file_exists(self.path_midi) then util.make_dir(self.path_midi) end
 
-  local midi_devices = {}
+  o.midi_devices = {}
   for _, dev in ipairs(midi.devices) do
     tab.print(dev)
-    table.insert(midi_devices,dev.name)
+    table.insert(o.midi_devices,dev.name)
   end
   params:add_group("MIDDY",13)
   params:add_text('middy_messsage',">","need to initialize.")
-  params:add_option("middy_device","midi device",midi_devices)
+  params:add_option("middy_device","midi device",o.midi_devices)
   params:add{type='binary',name='initialize midi',id='middy_init',behavior='trigger',action=function(v)
     self:init_midi()
   end}
@@ -80,10 +80,24 @@ function Middy:init(o)
     params:set("middy_messsage","")
     params:set("middy_load_mapping",self.path_maps)
   end)
+
+  if o.device ~= nil then 
+    o:init_midi(device_name)
+  end
   return o
 end
 
-function Middy:init_midi()
+function Middy:init_midi(device_name)
+  -- init midi from device map
+  if device_name ~= nil then     
+    device_name = string.lower(device_name)
+    for i, name in self.midi_devices do
+      if string.find(string.lower(name),device_name) then 
+        params:set("middy_device",i)
+      end
+    end
+  end
+
   self.is_initialized=true
   print("connecting to midi device "..params:get("middy_device"))
   m=midi.connect(params:get("middy_device"))
