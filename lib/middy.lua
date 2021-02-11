@@ -90,12 +90,19 @@ end
 function Middy:init_midi(device_name)
   print("middy: init_midi "..device_name)
   -- init midi from device map
-  if device_name ~= nil then     
+  if device_name ~= nil then
+    local found_device = false
     device_name = string.lower(device_name)
     for i, name in ipairs(self.midi_devices) do
       if string.find(string.lower(name),device_name) then 
         params:set("middy_device",i)
+        found_device = true 
+        break
       end
+    end
+    if not found_device then 
+      print("could not find device for middy: "..device_name)
+      do return end 
     end
   end
 
@@ -114,6 +121,10 @@ end
 
 function Middy:init_map(filename)
   print("middy: init_map "..filename)
+  if not util.file_exists(filename) then 
+    print("could not find file for middy: "..filename)
+    do return end 
+  end
   -- load file
   self.filename=filename
   local f=assert(io.open(self.filename,"rb"))
