@@ -26,6 +26,14 @@ middy:init()
 
 (see oooooo code for another example). this will add a new menu called `MIDDY` which you can access the functionality. there are two main functions described below.
 
+if you know the name of the device and the middy file you can init directly using that (without using the parameter menu):
+
+```lua
+local middy=include("middy/lib/middy")
+middy:init({filename="/path/to/myfile.middy",device="nanokontrol"})
+```
+
+
 ### mapping
 
 *middy* lets you map any number of midi inputs to any number of internal parameter in a norns script. the real power here is that, unlike `PSET`, here you can map a single midi input to multiple parameters. 

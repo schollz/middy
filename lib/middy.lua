@@ -33,14 +33,14 @@ function Middy:init(o)
   end
   if not util.file_exists(self.path_midi) then util.make_dir(self.path_midi) end
 
-  local midi_devices = {}
+  o.midi_devices = {}
   for _, dev in ipairs(midi.devices) do
     tab.print(dev)
-    table.insert(midi_devices,dev.name)
+    table.insert(o.midi_devices,dev.name)
   end
   params:add_group("MIDDY",13)
   params:add_text('middy_messsage',">","need to initialize.")
-  params:add_option("middy_device","midi device",midi_devices)
+  params:add_option("middy_device","midi device",o.midi_devices)
   params:add{type='binary',name='initialize midi',id='middy_init',behavior='trigger',action=function(v)
     self:init_midi()
   end}
@@ -80,10 +80,25 @@ function Middy:init(o)
     params:set("middy_messsage","")
     params:set("middy_load_mapping",self.path_maps)
   end)
+
+  if o.device ~= nil then 
+    o:init_midi(o.device)
+  end
   return o
 end
 
-function Middy:init_midi()
+function Middy:init_midi(device_name)
+  print("middy: init_midi "..device_name)
+  -- init midi from device map
+  if device_name ~= nil then     
+    device_name = string.lower(device_name)
+    for i, name in ipairs(self.midi_devices) do
+      if string.find(string.lower(name),device_name) then 
+        params:set("middy_device",i)
+      end
+    end
+  end
+
   self.is_initialized=true
   print("connecting to midi device "..params:get("middy_device"))
   m=midi.connect(params:get("middy_device"))
@@ -98,6 +113,7 @@ function Middy:init_midi()
 end
 
 function Middy:init_map(filename)
+  print("middy: init_map "..filename)
   -- load file
   self.filename=filename
   local f=assert(io.open(self.filename,"rb"))
@@ -153,7 +169,6 @@ end
 function Middy:playback_start()
   params:set("middy_messsage","started playback.")
   local fname=_path.data.."middy/midi/"..params:get("middy_recordnum")..".json"
-  print(fname)
   local f=io.open(fname,"rb")
   if f==nil then
     if self.has_menu then  params:set("middy_messsage","no file.") end
@@ -175,11 +190,11 @@ function Middy:playback_start()
     self.is_playing=true
     while beat_current<save_data.measures*save_data.beats_per_measure do
       if beat_current==0 then
-        print(clock.get_beats())
+        -- print(clock.get_beats())
       end
       if beats[beat_current]~=nil then
         -- send midi
-        print(json.encode(beats[beat_current]))
+        -- print(json.encode(beats[beat_current]))
         for _,note in ipairs(beats[beat_current]) do
           if note.type=="note_on" then
             m:note_on(note.note,note.vel)
@@ -227,9 +242,9 @@ function Middy:recording_stop()
 end
 
 function Middy:process_note(d)
-  for k,v in pairs(d) do
-    print("process_note",k,v)
-  end
+  -- for k,v in pairs(d) do
+  --   print("process_note",k,v)
+  -- end
   if not self.is_recording then
     do return end
   end
@@ -261,9 +276,9 @@ end
 
 function Middy:process(data)
   local d=midi.to_msg(data)
-  for k,v in pairs(d) do 
-	  print(k,v)
-  end
+  -- for k,v in pairs(d) do 
+	 --  print(k,v)
+  -- end
   if d.type=="clock" then do return end end
 if d.type=="note_on" or d.type=="note_off" then
     return self:process_note(d)
@@ -275,7 +290,7 @@ if d.type=="note_on" or d.type=="note_off" then
       return self:playback_stop()
     end
   end
-  print('Middy',d.type,d.cc,d.val)
+  -- print('Middy',d.type,d.cc,d.val)
   if not self.file_loaded then
     do return end
   end
@@ -283,7 +298,7 @@ if d.type=="note_on" or d.type=="note_off" then
   for i,e in pairs(self.events) do
     -- check if the midi is equal to the cc value
     if e.cc==d.cc then
-      print("Middy",e.comment)
+      -- print("Middy",e.comment)
       -- buttons only toggle when hitting 127
       if e.button~=nil and d.val~=127 then
         return
